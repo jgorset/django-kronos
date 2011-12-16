@@ -2,7 +2,7 @@
 
 ## About
 
-Kronos is a Django application that makes it easy to define and schedule tasks with *cron*.
+Kronos is a Django application that makes it easy to define and schedule tasks with cron.
 
 ## Usage
 
@@ -32,4 +32,4 @@ Kronos collects tasks from `cron` modules in each of your applications:
 
 ### Register tasks with cron
 
-    $ django cron install
+    $ python manage.py cron install

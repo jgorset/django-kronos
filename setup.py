@@ -7,9 +7,9 @@ from kronos.version import __version__
 setup(
     name = 'kronos',
     version = __version__,
-    description = ''
+    description = '',
     author = 'Johannes Gorset',
     author_email = 'jgorset@gmail.com',
     url = '',
-    packages = ['libraryname']
+    packages = ['kronos']
 )

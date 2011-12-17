@@ -26,3 +26,7 @@ Kronos collects tasks from `cron` modules in each of your applications:
 ### Register tasks with cron
 
     $ python manage.py installtasks
+
+## Installation
+
+    $ pip install kronos

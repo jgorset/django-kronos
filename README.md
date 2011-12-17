@@ -13,10 +13,9 @@ Kronos collects tasks from `cron` modules in each of your applications:
     # cookies/cron.py
 
     import kronos
-    
-    # Register a task and schedule it with a timedelta-compatible format
-    @kronos.register(minutes=15)
-    def complain():
+
+    @kronos.register('0 0 * * *')
+    def praise():
         complaints = [
             "I forgot to migrate our applications's cron jobs to our new server! Darn!",
             "I'm out of complaints! Damnit!"
@@ -24,12 +23,6 @@ Kronos collects tasks from `cron` modules in each of your applications:
 
         print random.choice(complaints)
 
-    # Register a task with cron's native scheduling format
-    @kronos.register('0 0 * * *')
-    def praise():
-        print "Kronos makes it really easy to define and schedule recurring tasks!"
-
-
 ### Register tasks with cron
 
-    $ python manage.py cron install
+    $ python manage.py installtasks

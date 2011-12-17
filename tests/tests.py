@@ -34,11 +34,11 @@ def test_write_crontab():
 
 def test_task_collection():
     """Test task collection."""
-    assert app.cron.praise.__name__ in [task.__name__ for task in tasks]
+    assert app.cron.complain.__name__ in [task.__name__ for task in tasks]
 
 def test_runtask():
     """Test running tasks via the ``runtask`` command."""
-    call_command('runtask', 'praise')
+    call_command('runtask', 'complain')
 
 def test_installtasks():
     """Test installing tasks via the ``installtasks`` command."""

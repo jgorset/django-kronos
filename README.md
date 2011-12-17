@@ -15,7 +15,7 @@ Kronos collects tasks from `cron` modules in each of your applications:
     import kronos
 
     @kronos.register('0 0 * * *')
-    def praise():
+    def complain():
         complaints = [
             "I forgot to migrate our applications's cron jobs to our new server! Darn!",
             "I'm out of complaints! Damnit!"

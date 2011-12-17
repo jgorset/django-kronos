@@ -10,7 +10,7 @@ Kronos is a Django application that makes it easy to define and schedule tasks w
 
 Kronos collects tasks from `cron` modules in each of your applications:
 
-    # cookies/cron.py
+    # app/cron.py
 
     import kronos
 

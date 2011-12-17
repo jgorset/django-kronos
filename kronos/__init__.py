@@ -6,6 +6,8 @@ from functools import wraps
 from django.conf import settings
 from django.utils.importlib import import_module
 
+from kronos.utils import read_crontab, write_crontab
+
 tasks = []
 
 def load():
@@ -26,7 +28,7 @@ def register(schedule):
 
         tasks.append(function)
 
-        function.cron_expression = '%(schedule)s %(python)s %(project_path)s/manage.py runtask %(task)s\n' % {
+        function.cron_expression = '%(schedule)s %(python)s %(project_path)s/manage.py runtask %(task)s' % {
             'schedule': schedule,
             'python': sys.executable,
             'project_path': os.path.dirname(sys.modules[settings.SETTINGS_MODULE].__file__),
@@ -39,3 +41,37 @@ def register(schedule):
         return wrapper
 
     return decorator
+
+def install():
+    """
+    Register tasks with cron.
+    """
+    load()
+
+    current_crontab = read_crontab()
+
+    new_crontab = ''
+    for task in tasks:
+        new_crontab += '%s\n' % task.cron_expression
+
+    write_crontab(current_crontab + new_crontab)
+
+def uninstall():
+    """
+    Uninstall tasks from cron.
+    """
+    current_crontab = read_crontab()
+
+    new_crontab = ''
+    for line in current_crontab.split('\n')[:-1]:
+        if '%(python)s %(project_path)s/manage.py runtask' % {
+            'python': sys.executable,
+            'project_path': os.path.dirname(sys.modules[settings.SETTINGS_MODULE].__file__)
+        } not in line:
+            new_crontab += '%s\n' % line
+
+    write_crontab(new_crontab)
+
+def reinstall():
+    uninstall()
+    install()

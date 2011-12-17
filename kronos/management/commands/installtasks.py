@@ -7,8 +7,7 @@ from subprocess import PIPE
 from django.core.management.base import NoArgsCommand, CommandError
 from django.conf import settings
 
-from kronos import tasks
-from kronos.utils import reinstall
+from kronos import tasks, reinstall
 
 class Command(NoArgsCommand):
     help = 'Register tasks with cron'

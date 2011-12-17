@@ -7,8 +7,7 @@ from subprocess import PIPE
 from django.core.management.base import NoArgsCommand, CommandError
 from django.conf import settings
 
-import kronos
-from kronos.utils import uninstall
+from kronos import uninstall
 
 class Command(NoArgsCommand):
     help = 'Remove tasks from cron'

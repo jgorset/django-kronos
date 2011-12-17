@@ -6,7 +6,7 @@ from functools import wraps
 from django.conf import settings
 from django.utils.importlib import import_module
 
-from kronos.utils import read_crontab, write_crontab
+from kronos.utils import read_crontab, write_crontab, delete_crontab
 
 tasks = []
 
@@ -70,7 +70,10 @@ def uninstall():
         } not in line:
             new_crontab += '%s\n' % line
 
-    write_crontab(new_crontab)
+    if new_crontab:
+        write_crontab(new_crontab)
+    else:
+        delete_crontab()
 
 def reinstall():
     uninstall()

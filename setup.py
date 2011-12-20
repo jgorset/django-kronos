@@ -11,5 +11,5 @@ setup(
     author = 'Johannes Gorset',
     author_email = 'jgorset@gmail.com',
     url = '',
-    packages = ['kronos']
+    packages = ['kronos', 'kronos.management', 'kronos.management.commands']
 )

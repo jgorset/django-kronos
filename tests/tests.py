@@ -4,8 +4,8 @@ from django.core.management import call_command
 from kronos import tasks, load
 from kronos.utils import read_crontab, write_crontab, delete_crontab
 
-import app
-import cron
+import project.cron
+import project.app
 
 crontab_backup = ''
 
@@ -35,8 +35,8 @@ def test_write_crontab():
 
 def test_task_collection():
     """Test task collection."""
-    assert app.cron.complain.__name__ in [task.__name__ for task in tasks]
-    assert cron.praise.__name__ in [task.__name__ for task in tasks]
+    assert project.app.cron.complain.__name__ in [task.__name__ for task in tasks]
+    assert project.cron.praise.__name__ in [task.__name__ for task in tasks]
 
 def test_runtask():
     """Test running tasks via the ``runtask`` command."""

@@ -7,7 +7,7 @@ DATABASES = {
 
 INSTALLED_APPS = [
     'kronos',
-    'tests.app'
+    'tests.project.app'
 ]
 
-ROOT_URLCONF = 'tests.app.urls'
+ROOT_URLCONF = 'urls'

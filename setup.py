@@ -10,6 +10,6 @@ setup(
     description = 'Kronos is a Django application that makes it easy to define and schedule tasks with cron.',
     author = 'Johannes Gorset',
     author_email = 'jgorset@gmail.com',
-    url = '',
+    url = 'http://github.com/jgorset/kronos',
     packages = ['kronos', 'kronos.management', 'kronos.management.commands']
 )

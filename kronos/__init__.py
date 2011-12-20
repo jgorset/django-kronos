@@ -15,8 +15,6 @@ def load():
     Load ``cron`` modules for applications listed in ``INSTALLED_APPS``.
     """
     for application in settings.INSTALLED_APPS:
-        module = import_module(application)
-
         try:
             import_module('%s.cron' % application)
         except ImportError:

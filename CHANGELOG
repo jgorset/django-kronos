@@ -1,3 +1,7 @@
+0.2.0
+
+* Kronos will now collect tasks from a 'cron' module in the project root.
+
 0.1.0
 
 * Everything

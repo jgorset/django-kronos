@@ -41,6 +41,7 @@ def test_task_collection():
 def test_runtask():
     """Test running tasks via the ``runtask`` command."""
     call_command('runtask', 'complain')
+    call_command('runtask', 'praise')
 
 def test_installtasks():
     """Test installing tasks via the ``installtasks`` command."""

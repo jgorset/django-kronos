@@ -1,12 +1,15 @@
+__version__ = '0.2'
+
 import os
 import sys
 
 from functools import wraps
 
-from django.conf import settings
-from django.utils.importlib import import_module
-
 from kronos.utils import read_crontab, write_crontab, delete_crontab
+from kronos.settings import SETTINGS_MODULE, SETTINGS_PATH, PROJECT_PATH, PROJECT_MODULE
+
+from django.utils.importlib import import_module
+from django.conf import settings
 
 tasks = []
 
@@ -15,7 +18,7 @@ def load():
     Load ``cron`` modules for applications listed in ``INSTALLED_APPS``.
     """
     try:
-        import_module('%s.cron' % sys.modules[settings.SETTINGS_MODULE])
+        import_module('%s.cron' % PROJECT_MODULE.__name__)
     except ImportError:
         pass
 
@@ -34,7 +37,7 @@ def register(schedule):
         function.cron_expression = '%(schedule)s %(python)s %(project_path)s/manage.py runtask %(task)s' % {
             'schedule': schedule,
             'python': sys.executable,
-            'project_path': os.path.dirname(sys.modules[settings.SETTINGS_MODULE].__file__),
+            'project_path': PROJECT_PATH,
             'task': function.__name__
         }
 
@@ -69,7 +72,7 @@ def uninstall():
     for line in current_crontab.split('\n')[:-1]:
         if '%(python)s %(project_path)s/manage.py runtask' % {
             'python': sys.executable,
-            'project_path': os.path.dirname(sys.modules[settings.SETTINGS_MODULE].__file__)
+            'project_path': PROJECT_PATH,
         } not in line:
             new_crontab += '%s\n' % line
 

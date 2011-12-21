@@ -31,7 +31,7 @@ def write_crontab(string):
     Write the given string to the crontab.
     """
     command = run(
-        args = 'printf \'%s\' | crontab' % string,
+        args = 'printf \'%s\' | crontab' % string.replace("'", "'\\''"),
         shell = True,
         stdout = PIPE,
         stderr = PIPE

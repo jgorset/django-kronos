@@ -1,14 +1,18 @@
-# Kronos
+Kronos
+======
 
-## About
+About
+-----
 
 Kronos makes it ridiculously easy to define and schedule tasks with cron.
 
-## Usage
+Usage
+-----
 
-### Define tasks
+Define tasks
+^^^^^^^^^^^^
 
-Kronos collects tasks from `cron` modules in your project root and each of your applications:
+Kronos collects tasks from `cron` modules in your project root and each of your applications::
 
     # app/cron.py
 
@@ -23,10 +27,16 @@ Kronos collects tasks from `cron` modules in your project root and each of your 
 
         print random.choice(complaints)
 
-### Register tasks with cron
+Register tasks with cron
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+::
 
     $ python manage.py installtasks
 
-## Installation
+Installation
+------------
+
+::
 
     $ pip install django-kronos

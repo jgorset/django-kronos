@@ -22,6 +22,13 @@ def load():
     except ImportError:
         pass
 
+    # Also try the parent module, in case PROJECT_MODULE is a settings package
+    if '.' in PROJECT_MODULE.__name__:
+        try:
+            import_module('%s.cron' % '.'.join(PROJECT_MODULE.__name__.split('.')[0:-1]))
+        except ImportError:
+            pass
+
     for application in settings.INSTALLED_APPS:
         try:
             import_module('%s.cron' % application)

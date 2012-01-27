@@ -62,6 +62,16 @@ def install():
 
     write_crontab(current_crontab + new_crontab)
 
+def printtasks():
+    """
+    Print the tasks that would be installed in the
+    crontab, for debugging purposes.
+    """
+    load()
+
+    for task in tasks:
+        print task.cron_expression
+
 def uninstall():
     """
     Uninstall tasks from cron.

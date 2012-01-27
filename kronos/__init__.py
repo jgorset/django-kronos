@@ -6,7 +6,7 @@ import sys
 from functools import wraps
 
 from kronos.utils import read_crontab, write_crontab, delete_crontab
-from kronos.settings import SETTINGS_MODULE, SETTINGS_PATH, PROJECT_PATH, PROJECT_MODULE
+from kronos.settings import PROJECT_PATH, PROJECT_MODULE
 
 from django.utils.importlib import import_module
 from django.conf import settings
@@ -21,6 +21,13 @@ def load():
         import_module('%s.cron' % PROJECT_MODULE.__name__)
     except ImportError:
         pass
+
+    # Also try the parent module, in case PROJECT_MODULE is a settings package
+    if '.' in PROJECT_MODULE.__name__:
+        try:
+            import_module('%s.cron' % '.'.join(PROJECT_MODULE.__name__.split('.')[0:-1]))
+        except ImportError:
+            pass
 
     for application in settings.INSTALLED_APPS:
         try:
@@ -61,6 +68,16 @@ def install():
         new_crontab += '%s\n' % task.cron_expression
 
     write_crontab(current_crontab + new_crontab)
+
+def printtasks():
+    """
+    Print the tasks that would be installed in the
+    crontab, for debugging purposes.
+    """
+    load()
+
+    for task in tasks:
+        print task.cron_expression
 
 def uninstall():
     """

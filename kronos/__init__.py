@@ -6,7 +6,7 @@ import sys
 from functools import wraps
 
 from kronos.utils import read_crontab, write_crontab, delete_crontab
-from kronos.settings import SETTINGS_MODULE, SETTINGS_PATH, PROJECT_PATH, PROJECT_MODULE
+from kronos.settings import PROJECT_PATH, PROJECT_MODULE
 
 from django.utils.importlib import import_module
 from django.conf import settings

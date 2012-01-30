@@ -41,11 +41,12 @@ def register(schedule):
 
         tasks.append(function)
 
-        function.cron_expression = '%(schedule)s %(python)s %(project_path)s/manage.py runtask %(task)s' % {
+        function.cron_expression = '%(schedule)s %(python)s %(project_path)s/manage.py runtask %(task)s --settings=%(settings_module)s' % {
             'schedule': schedule,
             'python': sys.executable,
             'project_path': PROJECT_PATH,
-            'task': function.__name__
+            'task': function.__name__,
+            'settings_module': settings.SETTINGS_MODULE,
         }
 
         @wraps(function)

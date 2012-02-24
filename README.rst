@@ -37,6 +37,6 @@ Register tasks with cron
 Installation
 ------------
 
-::
-
     $ pip install django-kronos
+
+Add ``kronos`` to ``INSTALLED_APPS``.

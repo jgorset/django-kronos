@@ -1,7 +1,7 @@
 Kronos
 ======
 
-Kronos makes it really easy to define and schedule tasks with cron.
+Kronos makes it really easy to schedule tasks with cron.
 
 Usage
 -----
@@ -9,7 +9,7 @@ Usage
 Define tasks
 ^^^^^^^^^^^^
 
-Kronos collects tasks from `cron` modules in your project root and each of your applications::
+Kronos collects tasks from ``cron`` modules in your project root and each of your applications::
 
     # app/cron.py
 

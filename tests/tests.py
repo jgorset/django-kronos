@@ -1,3 +1,5 @@
+from nose.tools import with_setup
+
 from django.test.client import Client
 from django.core.management import call_command
 
@@ -23,26 +25,31 @@ def teardown():
     else:
         delete_crontab()
 
+@with_setup(setup, teardown)
 def test_read_crontab():
     """Test reading from the crontab."""
     assert read_crontab() == crontab_backup
 
+@with_setup(setup, teardown)
 def test_write_crontab():
     """Test writing to the crontab."""
     write_crontab("* * * * * echo\n")
 
     assert read_crontab() == '* * * * * echo\n'
 
+@with_setup(setup, teardown)
 def test_task_collection():
     """Test task collection."""
     assert project.app.cron.complain.__name__ in [task.__name__ for task in tasks]
     assert project.cron.praise.__name__ in [task.__name__ for task in tasks]
 
+@with_setup(setup, teardown)
 def test_runtask():
     """Test running tasks via the ``runtask`` command."""
     call_command('runtask', 'complain')
     call_command('runtask', 'praise')
 
+@with_setup(setup, teardown)
 def test_installtasks():
     """Test installing tasks via the ``installtasks`` command."""
     call_command('installtasks')
@@ -50,6 +57,7 @@ def test_installtasks():
     for task in tasks:
         assert task.cron_expression in read_crontab()
 
+@with_setup(setup, teardown)
 def test_unintalltasks():
     """Test uninstalling tasks via the ``uninstalltasks`` command."""
     call_command('uninstalltasks')

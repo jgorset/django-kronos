@@ -47,4 +47,18 @@ Installation
 
     $ pip install django-kronos
 
-Add ``kronos`` to ``INSTALLED_APPS``.
+... and add ``kronos`` to ``INSTALLED_APPS``.
+
+Contribute
+----------
+
+* Fork the repository.
+* Do your thing.
+* Open a pull request.
+* Receive cake.
+
+I love you
+----------
+
+Johannes Gorset made this. You should [tweet me](http://twitter.com/jgorset) if you can't get it
+to work. In fact, you should tweet me anyway.

@@ -1,3 +1,9 @@
+0.2.3
++++++
+
+* Kronos now supports Django 1.4-style projects.
+* Fixed a bug that caused installation to fail for users that didn't already have a crontab.
+
 0.2.2
 +++++
 

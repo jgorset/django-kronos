@@ -1,10 +1,7 @@
 Kronos
 ======
 
-About
------
-
-Kronos makes it ridiculously easy to define and schedule tasks with cron.
+Kronos makes it really easy to define and schedule tasks with cron.
 
 Usage
 -----

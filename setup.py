@@ -2,9 +2,11 @@
 
 from setuptools import setup
 
+execfile('kronos/version.py')
+
 setup(
     name = 'django-kronos',
-    version = '0.2.2',
+    version = __version__,
     description = 'Kronos is a Django application that makes it easy to define and schedule tasks with cron.',
     long_description = open('README.rst').read(),
     author = 'Johannes Gorset',

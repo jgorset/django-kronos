@@ -1,3 +1,9 @@
+0.3.0
++++++
+
+* You may now customize the interpreter, management path and python path for tasks with the ``KRONOS_PYTHON``,
+  ``KRONOS_MANAGE`` and ``KRONOS_PYTHONPATH`` settings, respectively.
+
 0.2.3
 +++++
 

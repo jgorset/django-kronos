@@ -6,7 +6,7 @@ import sys
 from functools import wraps
 
 from kronos.utils import read_crontab, write_crontab, delete_crontab
-from kronos.settings import PROJECT_PATH, PROJECT_MODULE
+from kronos.settings import PROJECT_MODULE, KRONOS_PYTHON, KRONOS_MANAGE, KRONOS_PYTHONPATH
 
 from django.utils.importlib import import_module
 from django.conf import settings
@@ -41,13 +41,15 @@ def register(schedule):
 
         tasks.append(function)
 
-        function.cron_expression = '%(schedule)s %(python)s %(project_path)s/manage.py runtask %(task)s --settings=%(settings_module)s' % {
+        function.cron_expression = '%(schedule)s %(python)s %(manage)s runtask %(task)s --settings=%(settings_module)s' % {
             'schedule': schedule,
-            'python': sys.executable,
-            'project_path': PROJECT_PATH,
+            'python': KRONOS_PYTHON,
+            'manage': KRONOS_MANAGE,
             'task': function.__name__,
             'settings_module': settings.SETTINGS_MODULE,
         }
+        if KRONOS_PYTHONPATH is not None:
+            function.cron_expression += ' --pythonpath=%s' % KRONOS_PYTHONPATH
 
         @wraps(function)
         def wrapper(*args, **kwargs):
@@ -88,9 +90,9 @@ def uninstall():
 
     new_crontab = ''
     for line in current_crontab.split('\n')[:-1]:
-        if '%(python)s %(project_path)s/manage.py runtask' % {
-            'python': sys.executable,
-            'project_path': PROJECT_PATH,
+        if '%(python)s %(manage)s runtask' % {
+            'python': KRONOS_PYTHON,
+            'manage': KRONOS_MANAGE,
         } not in line:
             new_crontab += '%s\n' % line
 

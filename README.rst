@@ -50,19 +50,17 @@ cases when it requires modification. You can achieve it with a number of
 settings variables used by kronos:
 
 KRONOS_PYTHON
-    Python interpreter to build a crontab line. By default the
-    same interpreter as one you invoked to install tasks is used.
+    Python interpreter to build a crontab line (defaults to the interpreter you used to
+    invoke the management command).
 
 KRONOS_MANAGE
-    Management command to build a crontab line. By default ``getcwd() + manage.py``
-    is used.
+    Management command to build a crontab line (defaults to ``manage.py`` in the current
+    working directory).
 
 KRONOS_PYTHONPATH
     Extra path which will be added as a ``--pythonpath`` option to the management command.
-    By default extra pythonpath is not used.
 
-Define these variables in your :file:`settings.py` if you wish to alter crontab
-lines.
+Define these variables in your ``settings.py`` file if you wish to alter crontab lines.
 
 Installation
 ------------

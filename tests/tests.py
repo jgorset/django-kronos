@@ -3,64 +3,105 @@ from nose.tools import with_setup
 from django.test.client import Client
 from django.core.management import call_command
 
+from subprocess import PIPE
+from StringIO import StringIO
+
+from nose.tools import *
+
 from kronos import tasks, load
 from kronos.utils import read_crontab, write_crontab, delete_crontab
+
+from mock import Mock, patch
 
 import project.cron
 import project.app
 
-crontab_backup = ''
-
 load()
 
-def setup():
-    global crontab_backup
-    crontab_backup = read_crontab()
-
-def teardown():
-    global crontab_backup
-
-    if crontab_backup:
-        write_crontab(crontab_backup)
-    else:
-        delete_crontab()
-
-@with_setup(setup, teardown)
-def test_read_crontab():
+@patch('subprocess.Popen')
+def test_read_crontab(mock):
     """Test reading from the crontab."""
-    assert read_crontab() == crontab_backup
+    mock.return_value = Mock(
+        stdout = StringIO('crontab: installing new crontab'),
+        stderr = StringIO('')
+    )
 
-@with_setup(setup, teardown)
-def test_write_crontab():
+    read_crontab()
+
+    mock.assert_called_with(
+        args = 'crontab -l',
+        shell = True,
+        stdout = PIPE,
+        stderr = PIPE
+    )
+
+@patch('subprocess.Popen')
+def test_read_empty_crontab(mock):
+    """Test reading from an empty crontab."""
+    mock.return_value = Mock(
+        stdout = StringIO(''),
+        stderr = StringIO('crontab: no crontab for <user>')
+    )
+
+    read_crontab()
+
+@patch('subprocess.Popen')
+def test_read_crontab_with_errors(mock):
+    """Test reading from the crontab."""
+    mock.return_value = Mock(
+        stdout = StringIO(''),
+        stderr = StringIO('bash: crontal: command not found')
+    )
+
+    assert_raises(ValueError, read_crontab)
+
+@patch('subprocess.Popen')
+def test_write_crontab(mock):
     """Test writing to the crontab."""
+    mock.return_value = Mock(
+        stdout = StringIO('crontab: installing new crontab'),
+        stderr = StringIO('')
+    )
+
     write_crontab("* * * * * echo\n")
 
-    assert read_crontab() == '* * * * * echo\n'
+    mock.assert_called_with(
+        args = 'printf \'* * * * * echo\n\' | crontab',
+        shell = True,
+        stdout = PIPE,
+        stderr = PIPE
+    )
 
-@with_setup(setup, teardown)
 def test_task_collection():
     """Test task collection."""
     assert project.app.cron.complain.__name__ in [task.__name__ for task in tasks]
     assert project.cron.praise.__name__ in [task.__name__ for task in tasks]
 
-@with_setup(setup, teardown)
 def test_runtask():
     """Test running tasks via the ``runtask`` command."""
     call_command('runtask', 'complain')
     call_command('runtask', 'praise')
 
-@with_setup(setup, teardown)
-def test_installtasks():
-    """Test installing tasks via the ``installtasks`` command."""
+@patch('subprocess.Popen')
+def test_installtasks(mock):
+    """Test installing tasks with the ``installtasks`` command."""
+    mock.return_value = Mock(
+        stdout = StringIO('crontab: installing new crontab'),
+        stderr = StringIO('')
+    )
+
     call_command('installtasks')
 
-    for task in tasks:
-        assert task.cron_expression in read_crontab()
+    assert mock.called
 
-@with_setup(setup, teardown)
-def test_unintalltasks():
-    """Test uninstalling tasks via the ``uninstalltasks`` command."""
+@patch('subprocess.Popen')
+def test_unintalltasks(mock):
+    """Test uninstalling tasks with the ``uninstalltasks`` command."""
+    mock.return_value = Mock(
+        stdout = StringIO('crontab: installing new crontab'),
+        stderr = StringIO('')
+    )
+
     call_command('uninstalltasks')
 
-    for task in tasks:
-        assert task.cron_expression not in read_crontab()
+    assert mock.called

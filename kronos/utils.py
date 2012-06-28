@@ -1,8 +1,7 @@
 import sys
 import os
 
-from subprocess import Popen as run
-from subprocess import PIPE
+import subprocess
 
 from django.conf import settings
 
@@ -12,11 +11,11 @@ def read_crontab():
     """
     Read the crontab.
     """
-    command = run(
+    command = subprocess.Popen(
         args = 'crontab -l',
         shell = True,
-        stdout = PIPE,
-        stderr = PIPE
+        stdout = subprocess.PIPE,
+        stderr = subprocess.PIPE
     )
 
     stdout, stderr = command.stdout.read(), command.stderr.read()
@@ -30,11 +29,11 @@ def write_crontab(string):
     """
     Write the given string to the crontab.
     """
-    command = run(
+    command = subprocess.Popen(
         args = 'printf \'%s\' | crontab' % string.replace("'", "'\\''"),
         shell = True,
-        stdout = PIPE,
-        stderr = PIPE
+        stdout = subprocess.PIPE,
+        stderr = subprocess.PIPE
     )
 
     stdout, stderr = command.stdout.read(), command.stderr.read()
@@ -46,11 +45,11 @@ def delete_crontab():
     """
     Delete the crontab.
     """
-    command = run(
+    command = subprocess.Popen(
         args = 'crontab -r',
         shell = True,
-        stdout = PIPE,
-        stderr = PIPE
+        stdout = subprocess.PIPE,
+        stderr = subprocess.PIPE
     )
 
     stdout, stderr = command.stdout.read(), command.stderr.read()

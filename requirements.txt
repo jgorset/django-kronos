@@ -1,2 +1,2 @@
 mock
-django
+django==1.3

@@ -49,13 +49,17 @@ Usually this line will work pretty well for you, but there can be some rare
 cases when it requires modification. You can achieve it with a number of
 settings variables used by kronos:
 
-* `KRONOS_PYTHON`: python interpreter to build a crontab line. By default the
-                   same interpreter as one you invoked to install tasks is used.
-* `KRONOS_MANAGE`: management command to build a crontab line. By default
-                   ``getcwd() + manage.py`` is used.
-* `KRONOS_PYTHONPATH`: extra path which will be added as a `--pythonpath`
-                       option to management command. By default extra
-                       pythonpath is not used.
+KRONOS_PYTHON
+    Python interpreter to build a crontab line. By default the
+    same interpreter as one you invoked to install tasks is used.
+
+KRONOS_MANAGE
+    Management command to build a crontab line. By default ``getcwd() + manage.py``
+    is used.
+
+KRONOS_PYTHONPATH
+    Extra path which will be added as a ``--pythonpath`` option to the management command.
+    By default extra pythonpath is not used.
 
 Define these variables in your :file:`settings.py` if you wish to alter crontab
 lines.

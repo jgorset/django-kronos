@@ -5,6 +5,15 @@ Kronos
 
 Kronos makes it really easy to schedule tasks with cron.
 
+Installation
+------------
+
+::
+
+    $ pip install django-kronos
+
+... and add ``kronos`` to ``INSTALLED_APPS``.
+
 Usage
 -----
 
@@ -64,14 +73,6 @@ KRONOS_PYTHONPATH
 
 Define these variables in your ``settings.py`` file if you wish to alter crontab lines.
 
-Installation
-------------
-
-::
-
-    $ pip install django-kronos
-
-... and add ``kronos`` to ``INSTALLED_APPS``.
 
 Contribute
 ----------

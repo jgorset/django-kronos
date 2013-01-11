@@ -58,6 +58,18 @@ def register(schedule):
 
     return decorator
 
+def register_monthly():
+    return register("0 0 1 * *")
+
+def register_weekly():
+    return register("0 0 * * 0")
+
+def register_daily():
+    return register("0 0 * * *")
+
+def register_hourly():
+    return register("0 * * * *")
+
 def install():
     """
     Register tasks with cron.

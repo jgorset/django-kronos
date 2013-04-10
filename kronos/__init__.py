@@ -3,7 +3,7 @@ from version import __version__
 from functools import wraps
 
 from kronos.utils import read_crontab, write_crontab, delete_crontab
-from kronos.settings import PROJECT_MODULE, KRONOS_PYTHON, KRONOS_MANAGE, KRONOS_PYTHONPATH
+from kronos.settings import PROJECT_MODULE, KRONOS_PYTHON, KRONOS_MANAGE, KRONOS_PYTHONPATH, KRONOS_POSTFIX
 
 from django.utils.importlib import import_module
 from django.conf import settings
@@ -46,7 +46,7 @@ def register(schedule):
             'manage': KRONOS_MANAGE,
             'task': function.__name__,
             'settings_module': settings.SETTINGS_MODULE,
-            'postfix': settings.KRONOS_POSTFIX
+            'postfix': KRONOS_POSTFIX
         }
         if KRONOS_PYTHONPATH is not None:
             function.cron_expression += ' --pythonpath=%s' % KRONOS_PYTHONPATH

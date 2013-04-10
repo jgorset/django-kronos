@@ -1,8 +1,5 @@
 from version import __version__
 
-import os
-import sys
-
 from functools import wraps
 
 from kronos.utils import read_crontab, write_crontab, delete_crontab
@@ -12,6 +9,7 @@ from django.utils.importlib import import_module
 from django.conf import settings
 
 tasks = []
+
 
 def load():
     """
@@ -35,18 +33,20 @@ def load():
         except ImportError:
             pass
 
+
 def register(schedule):
     def decorator(function):
         global tasks
 
         tasks.append(function)
 
-        function.cron_expression = '%(schedule)s %(python)s %(manage)s runtask %(task)s --settings=%(settings_module)s' % {
+        function.cron_expression = '%(schedule)s %(python)s %(manage)s runtask %(task)s --settings=%(settings_module)s %(postfix)s' % {
             'schedule': schedule,
             'python': KRONOS_PYTHON,
             'manage': KRONOS_MANAGE,
             'task': function.__name__,
             'settings_module': settings.SETTINGS_MODULE,
+            'postfix': settings.KRONOS_POSTFIX
         }
         if KRONOS_PYTHONPATH is not None:
             function.cron_expression += ' --pythonpath=%s' % KRONOS_PYTHONPATH
@@ -57,6 +57,7 @@ def register(schedule):
         return wrapper
 
     return decorator
+
 
 def install():
     """
@@ -72,6 +73,7 @@ def install():
 
     write_crontab(current_crontab + new_crontab)
 
+
 def printtasks():
     """
     Print the tasks that would be installed in the
@@ -81,6 +83,7 @@ def printtasks():
 
     for task in tasks:
         print task.cron_expression
+
 
 def uninstall():
     """
@@ -100,6 +103,7 @@ def uninstall():
         write_crontab(new_crontab)
     else:
         delete_crontab()
+
 
 def reinstall():
     uninstall()

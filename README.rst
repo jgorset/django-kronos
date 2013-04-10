@@ -71,6 +71,9 @@ KRONOS_MANAGE
 KRONOS_PYTHONPATH
     Extra path which will be added as a ``--pythonpath`` option to the management command.
 
+KRONOS_POSTFIX
+    Extra string added at the end of the command. For dirty thinks like '> /dev/null 2>&1'
+
 Define these variables in your ``settings.py`` file if you wish to alter crontab lines.
 
 

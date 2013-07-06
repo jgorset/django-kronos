@@ -34,7 +34,7 @@ def load():
             pass
 
 
-def register(schedule):
+def register(schedule, seconds=None):
     def decorator(function):
         global tasks
 
@@ -50,6 +50,8 @@ def register(schedule):
         }
         if KRONOS_PYTHONPATH is not None:
             function.cron_expression += ' --pythonpath=%s' % KRONOS_PYTHONPATH
+            
+        function.seconds_interval = seconds
 
         @wraps(function)
         def wrapper(*args, **kwargs):

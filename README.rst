@@ -35,6 +35,29 @@ Kronos collects tasks from ``cron`` modules in your project root and each of you
 
         print random.choice(complaints)
 
+Also if you need run your task every «x» seconds you can set optional parameter::
+
+    # app/cron.py
+
+    import kronos
+
+    @kronos.register('* * * * *', 15)
+    def complain():
+        complaints = [
+            "I forgot to migrate our applications's cron jobs to our new server! Darn!",
+            "I'm out of complaints! Damnit!"
+        ]
+
+        print random.choice('Every 15 seconds: ' + complaints)
+        
+It's will execute your task 4 times — each new in 15 seconds after pereviously finished.
+        
+Note:
+    You must control how long run every execution of this task! Cron run another job
+    in next minute. So it can be runned coroutine. But, if your task runs something about 15 seconds,
+    you always can set something like: ``@kronos.register('*/2 * * * *', 15)`` — it's run task every 
+    15 seconds on each second minute.
+
 Run tasks manually
 ^^^^^^^^^^^^^^^^^^
 

@@ -1,3 +1,8 @@
+0.4.0
++++++
+
+* You may now postfix commands with ``KRONOS_POSTFIX``.
+
 0.3.0
 +++++
 

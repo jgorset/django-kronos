@@ -25,6 +25,7 @@ Kronos collects tasks from ``cron`` modules in your project root and each of you
     # app/cron.py
 
     import kronos
+    import random
 
     @kronos.register('0 0 * * *')
     def complain():

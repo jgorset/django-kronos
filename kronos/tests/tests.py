@@ -109,7 +109,7 @@ class TestCase(TestCase):
 
     def test_list_tasks(self):
         sys.stdout = StringIO()
-        call_command('runtask', **{'list': True})
+        call_command('showtasks')
         sys.stdout.seek(0)
         val = sys.stdout.read()
         self.assertIn('complain', val)

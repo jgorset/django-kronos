@@ -36,6 +36,7 @@ Kronos collects tasks from ``cron`` modules in your project root and each of you
 
         print random.choice(complaints)
 
+
 Run tasks manually
 ^^^^^^^^^^^^^^^^^^
 
@@ -43,6 +44,18 @@ Run tasks manually
 
     $ python manage.py runtask complain
     I forgot to migrate our applications's cron jobs to our new server! Darn!
+
+
+List all registered tasks
+^^^^^^^^^^^^^^^^^^
+
+::
+
+    $ python manage.py runtask --list
+    * List of tasks registered in Kronos *
+    >> my_task_one
+    >> my_task_two
+
 
 Register tasks with cron
 ^^^^^^^^^^^^^^^^^^^^^^^^

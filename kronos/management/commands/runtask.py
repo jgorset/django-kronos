@@ -1,6 +1,7 @@
+import kronos
+
 from django.core.management.base import BaseCommand, CommandError
 
-import kronos
 
 class Command(BaseCommand):
     args = '<task>'

@@ -7,6 +7,7 @@ from subprocess import PIPE
 
 from django.core.management import call_command
 from django.test import TestCase
+from django.core.management.base import CommandError
 from kronos import tasks, load
 from kronos.utils import read_crontab, write_crontab
 from mock import Mock, patch
@@ -26,7 +27,6 @@ class TestCase(TestCase):
         )
 
         call_command('uninstalltasks')
-        print mock.mock_calls[-1]
         self.assertTrue(mock.called)
 
     @patch('subprocess.Popen')
@@ -96,6 +96,11 @@ class TestCase(TestCase):
         """Test running tasks via the ``runtask`` command."""
         call_command('runtask', 'complain')
         call_command('runtask', 'praise')
+
+    def test_runtask_django(self):
+        """Test running tasks via the ``runtask`` command."""
+        self.assertRaises(CommandError,
+            lambda: call_command('runtask', 'task'))
 
     @patch('subprocess.Popen')
     def test_installtasks(self, mock):

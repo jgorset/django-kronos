@@ -17,5 +17,5 @@ class Command(BaseCommand):
                 else:
                     raise CommandError('This is a django command. You have '
                         'to run it via python manage.py {0}'
-                        .format(task['name']))
+                        .format(task_name))
         raise CommandError('Task \'%s\' not found' % task_name)

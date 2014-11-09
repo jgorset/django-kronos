@@ -36,7 +36,7 @@ Kronos collects tasks from ``cron`` modules in your project root and each of you
 
         print random.choice(complaints)
 
-If you have a task in a Django Command you can register it to::
+If you have a task in a Django Command you can register it doing::
 
     # app/management/commands/task.py
 

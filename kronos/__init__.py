@@ -117,7 +117,11 @@ def uninstall():
 
     new_crontab = ''
     for line in current_crontab.split('\n')[:-1]:
-        if '$KRONOS_BREAD_CRUMB' not in line:
+        exp = '%(python)s %(manage)s runtask' % {
+            'python': KRONOS_PYTHON,
+            'manage': KRONOS_MANAGE,
+            }
+        if '$KRONOS_BREAD_CRUMB' not in line and exp not in line:
             new_crontab += '%s\n' % line
 
     if new_crontab:

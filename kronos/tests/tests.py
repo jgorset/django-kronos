@@ -26,7 +26,7 @@ class TestCase(TestCase):
         )
 
         call_command('uninstalltasks')
-
+        print mock.mock_calls[-1]
         self.assertTrue(mock.called)
 
     @patch('subprocess.Popen')
@@ -86,9 +86,11 @@ class TestCase(TestCase):
     def test_task_collection(self):
         """Test task collection."""
         self.assertIn(kronos.tests.project.app.cron.complain.__name__,
-            [task.__name__ for task in tasks])
+            [task['name'] for task in tasks])
         self.assertIn(kronos.tests.project.cron.praise.__name__,
-            [task.__name__ for task in tasks])
+            [task['name'] for task in tasks])
+        self.assertIn('task',
+            [task['name'] for task in tasks])
 
     def test_runtask(self):
         """Test running tasks via the ``runtask`` command."""
@@ -107,6 +109,20 @@ class TestCase(TestCase):
 
         self.assertTrue(mock.called)
 
+    @patch('subprocess.Popen')
+    def test_installed_tasks(self, mock):
+        """Test installing tasks with the ``installtasks`` command."""
+        mock.return_value = Mock(
+            stdout=StringIO('crontab: installing new crontab'),
+            stderr=StringIO('')
+        )
+
+        call_command('installtasks')
+        calls = unicode(mock.mock_calls[-1])
+        self.assertIn('runtask praise', calls)
+        self.assertIn('runtask complain', calls)
+        self.assertIn('manage.py task', calls)
+
     def test_list_tasks(self):
         sys.stdout = StringIO()
         call_command('showtasks')
@@ -114,3 +130,4 @@ class TestCase(TestCase):
         val = sys.stdout.read()
         self.assertIn('complain', val)
         self.assertIn('praise', val)
+        self.assertIn('task', val)

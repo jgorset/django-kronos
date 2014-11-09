@@ -1,9 +1,6 @@
-from optparse import make_option
+from django.core.management.base import NoArgsCommand
+from kronos import tasks, reinstall
 
-from django.core.management.base import NoArgsCommand, CommandError
-from django.conf import settings
-
-from kronos import tasks, reinstall, printtasks
 
 class Command(NoArgsCommand):
     help = 'Register tasks with cron'

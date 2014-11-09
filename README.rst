@@ -36,6 +36,20 @@ Kronos collects tasks from ``cron`` modules in your project root and each of you
 
         print random.choice(complaints)
 
+If you have a task in a Django Command you can register it to::
+
+    # app/management/commands/task.py
+
+    from django.core.management.base import NoArgsCommand
+
+    import kronos
+
+    @kronos.register('0 0 * * *')
+    class Command(NoArgsCommand):
+        def handle_noargs(self, **options):
+            print('command task')
+
+
 
 Run tasks manually
 ^^^^^^^^^^^^^^^^^^
@@ -45,6 +59,11 @@ Run tasks manually
     $ python manage.py runtask complain
     I forgot to migrate our applications's cron jobs to our new server! Darn!
 
+Keep in mind that if the registered task is a django command you have to run it
+in the normal way::
+
+    $ python manage.py task
+
 
 List all registered tasks
 ^^^^^^^^^^^^^^^^^^
@@ -53,8 +72,11 @@ List all registered tasks
 
     $ python manage.py showtasks
     * List of tasks registered in Kronos *
-    >> my_task_one
-    >> my_task_two
+    >> Kronos tasks
+        >> my_task_one
+        >> my_task_two
+    >> Django tasks
+        >> my_django_task
 
 
 Register tasks with cron
@@ -68,7 +90,8 @@ Register tasks with cron
 You can review the crontab with a ``crontab -l`` command::
 
     $ crontab -l
-    0 0 * * * /usr/bin/python /path/to/manage.py runtask complain --settings=myprpoject.settings
+    0 0 * * * /usr/bin/python /path/to/manage.py runtask complain --settings=myprpoject.settings $KRONOS_BREAD_CRUMB
+    0 0 * * * /usr/bin/python /path/to/manage.py task --settings=myprpoject.settings $KRONOS_BREAD_CRUMB
 
 Usually this line will work pretty well for you, but there can be some rare
 cases when it requires modification. You can achieve it with a number of
@@ -90,6 +113,8 @@ KRONOS_POSTFIX
 
 Define these variables in your ``settings.py`` file if you wish to alter crontab lines.
 
+The env variable ``$KRONOS_BREAD_CRUMB`` is defined to detect which tasks have to be deleted after
+being installed.
 
 Contribute
 ----------

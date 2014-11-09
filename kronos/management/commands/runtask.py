@@ -11,7 +11,11 @@ class Command(BaseCommand):
         kronos.load()
 
         for task in kronos.tasks:
-            if task.__name__ == task_name:
-                return task()
-
+            if task['name'] == task_name:
+                if not task['django_command']:
+                    return task['fn']()
+                else:
+                    raise CommandError('This is a django command. You have '
+                        'to run it via python manage.py {0}'
+                        .format(task['name']))
         raise CommandError('Task \'%s\' not found' % task_name)

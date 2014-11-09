@@ -1,6 +1,6 @@
 import random
-
 import kronos
+
 
 @kronos.register('0 0 * * *')
 def complain():
@@ -9,4 +9,4 @@ def complain():
         "I'm out of complaints! Damnit!"
     ]
 
-    print random.choice(complaints)
+    print(random.choice(complaints))

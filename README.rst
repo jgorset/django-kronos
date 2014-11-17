@@ -51,7 +51,7 @@ List all registered tasks
 
 ::
 
-    $ python manage.py runtask --list
+    $ python manage.py showtasks
     * List of tasks registered in Kronos *
     >> my_task_one
     >> my_task_two

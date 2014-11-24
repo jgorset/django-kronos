@@ -6,7 +6,7 @@ from kronos.settings import PROJECT_MODULE, KRONOS_PYTHON, KRONOS_MANAGE, \
     KRONOS_PYTHONPATH, KRONOS_POSTFIX
 from django.conf import settings
 from kronos.utils import read_crontab, write_crontab, delete_crontab
-from version import __version__
+from kronos.version import __version__
 
 
 tasks = []
@@ -33,7 +33,7 @@ def load():
             pass
 
     # load django tasks
-    for cmd, app in get_commands().iteritems():
+    for cmd, app in get_commands().items():
         load_command_class(app, cmd)
 
 
@@ -106,7 +106,7 @@ def printtasks():
     load()
 
     for task in tasks:
-        print task['fn'].cron_expression
+        print(task['fn'].cron_expression)
 
 
 def uninstall():

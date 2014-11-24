@@ -2,7 +2,10 @@ import sys
 import kronos.tests.project.app
 import kronos.tests.project.cron
 
-from StringIO import StringIO
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 from subprocess import PIPE
 
 from django.core.management import call_command
@@ -123,7 +126,7 @@ class TestCase(TestCase):
         )
 
         call_command('installtasks')
-        calls = unicode(mock.mock_calls[-1])
+        calls = str(mock.mock_calls[-1])
         self.assertIn('runtask praise', calls)
         self.assertIn('runtask complain', calls)
         self.assertIn('manage.py task', calls)

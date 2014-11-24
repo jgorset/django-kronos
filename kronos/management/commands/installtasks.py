@@ -7,4 +7,4 @@ class Command(NoArgsCommand):
 
     def handle_noargs(self, **options):
         reinstall()
-        print "Installed %s tasks." % len(tasks)
+        print("Installed {0} tasks.".format(len(tasks)))

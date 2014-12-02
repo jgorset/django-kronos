@@ -1,3 +1,8 @@
+0.5.0
++++++
+
+* You may now list commands with ``python manage.py showtasks``.
+
 0.4.0
 +++++
 

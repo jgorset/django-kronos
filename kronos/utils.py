@@ -1,21 +1,15 @@
-import sys
-import os
-
 import subprocess
 
-from django.conf import settings
-
-import kronos
 
 def read_crontab():
     """
     Read the crontab.
     """
     command = subprocess.Popen(
-        args = 'crontab -l',
-        shell = True,
-        stdout = subprocess.PIPE,
-        stderr = subprocess.PIPE
+        args='crontab -l',
+        shell=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE
     )
 
     stdout, stderr = command.stdout.read(), command.stderr.read()
@@ -25,15 +19,16 @@ def read_crontab():
 
     return stdout
 
+
 def write_crontab(string):
     """
     Write the given string to the crontab.
     """
     command = subprocess.Popen(
-        args = 'printf \'%s\' | crontab' % string.replace("'", "'\\''"),
-        shell = True,
-        stdout = subprocess.PIPE,
-        stderr = subprocess.PIPE
+        args='printf \'%s\' | crontab' % string.replace("'", "'\\''"),
+        shell=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE
     )
 
     stdout, stderr = command.stdout.read(), command.stderr.read()
@@ -41,15 +36,16 @@ def write_crontab(string):
     if stderr:
         raise ValueError('Could not write to crontab: \'%s\'' % stderr)
 
+
 def delete_crontab():
     """
     Delete the crontab.
     """
     command = subprocess.Popen(
-        args = 'crontab -r',
-        shell = True,
-        stdout = subprocess.PIPE,
-        stderr = subprocess.PIPE
+        args='crontab -r',
+        shell=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE
     )
 
     stdout, stderr = command.stdout.read(), command.stderr.read()

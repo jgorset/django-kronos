@@ -1,10 +1,11 @@
 from django.core.management.base import NoArgsCommand
 
-from kronos import uninstall
+import kronos
 
 
+@kronos.register('0 0 * * *')
 class Command(NoArgsCommand):
-    help = 'Remove tasks from cron'
+    help = 'Register tasks with cron'
 
     def handle_noargs(self, **options):
-        uninstall()
+        print('command task')

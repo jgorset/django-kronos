@@ -10,5 +10,13 @@ class Command(BaseCommand):
         kronos.load()
 
         print('* List of tasks registered in Kronos *')
+
+        print('>> Kronos tasks')
         for task in kronos.tasks:
-            print('>> {0}'.format(task.__name__))
+            if not task['django_command']:
+                print('    >> {0}'.format(task['name']))
+
+        print('>> Django tasks')
+        for task in kronos.tasks:
+            if task['django_command']:
+                print('    >> {0}'.format(task['name']))

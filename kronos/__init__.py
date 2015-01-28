@@ -2,7 +2,7 @@ from functools import wraps
 
 from django.core.management import get_commands, load_command_class
 from django.utils.importlib import import_module
-from kronos.settings import PROJECT_MODULE, KRONOS_PYTHON, KRONOS_MANAGE, \
+from kronos.settings import PROJECT_MODULE_NAME, KRONOS_PYTHON, KRONOS_MANAGE, \
     KRONOS_PYTHONPATH, KRONOS_POSTFIX
 from django.conf import settings
 from kronos.utils import read_crontab, write_crontab, delete_crontab
@@ -16,11 +16,11 @@ def load():
     """
     Load ``cron`` modules for applications listed in ``INSTALLED_APPS``.
     """
-    paths = ['%s.cron' % PROJECT_MODULE.__name__]
+    paths = ['%s.cron' % PROJECT_MODULE_NAME]
 
-    if '.' in PROJECT_MODULE.__name__:
+    if '.' in PROJECT_MODULE_NAME:
         paths.append('%s.cron' % '.'.join(
-            PROJECT_MODULE.__name__.split('.')[0:-1]))
+            PROJECT_MODULE_NAME.split('.')[0:-1]))
 
     for application in settings.INSTALLED_APPS:
         paths.append('%s.cron' % application)

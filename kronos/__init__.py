@@ -16,7 +16,10 @@ def load():
     """
     Load ``cron`` modules for applications listed in ``INSTALLED_APPS``.
     """
-    paths = ['%s.cron' % PROJECT_MODULE_NAME]
+    if PROJECT_MODULE_NAME:
+        paths = ['%s.cron' % PROJECT_MODULE_NAME]
+    else:
+        paths = []
 
     if '.' in PROJECT_MODULE_NAME:
         paths.append('%s.cron' % '.'.join(

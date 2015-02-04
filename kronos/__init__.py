@@ -18,12 +18,11 @@ def load():
     """
     if PROJECT_MODULE_NAME:
         paths = ['%s.cron' % PROJECT_MODULE_NAME]
+        if '.' in PROJECT_MODULE_NAME:
+            paths.append('%s.cron' % '.'.join(
+                PROJECT_MODULE_NAME.split('.')[0:-1]))
     else:
         paths = []
-
-    if '.' in PROJECT_MODULE_NAME:
-        paths.append('%s.cron' % '.'.join(
-            PROJECT_MODULE_NAME.split('.')[0:-1]))
 
     for application in settings.INSTALLED_APPS:
         paths.append('%s.cron' % application)

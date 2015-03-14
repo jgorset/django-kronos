@@ -30,7 +30,7 @@ def load():
         try:
             import_module(p)
         except ImportError as e:
-            if e.message != 'No module named cron'
+            if e.message != 'No module named cron':
                 print e.message
 
     # load django tasks

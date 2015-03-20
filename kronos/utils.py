@@ -14,7 +14,7 @@ def read_crontab():
 
     stdout, stderr = command.stdout.read(), command.stderr.read()
 
-    if stderr and 'no crontab for' not in stderr:
+    if stderr and 'no crontab for' not in str(stderr):
         raise ValueError('Could not read from crontab: \'%s\'' % stderr)
 
     return stdout

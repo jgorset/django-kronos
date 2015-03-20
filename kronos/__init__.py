@@ -116,7 +116,7 @@ def uninstall():
     current_crontab = read_crontab()
 
     new_crontab = ''
-    for line in current_crontab.split('\n')[:-1]:
+    for line in str(current_crontab).split('\n')[:-1]:
         exp = '%(python)s %(manage)s runtask' % {
             'python': KRONOS_PYTHON,
             'manage': KRONOS_MANAGE,

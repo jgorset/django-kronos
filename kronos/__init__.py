@@ -95,7 +95,7 @@ def install():
     for task in tasks:
         new_crontab += '%s\n' % task['fn'].cron_expression
 
-    write_crontab(current_crontab + new_crontab)
+    write_crontab(str(current_crontab) + str(new_crontab))
 
 
 def printtasks():

@@ -50,5 +50,5 @@ def delete_crontab():
 
     stdout, stderr = command.stdout.read(), command.stderr.read()
 
-    if stderr and 'no crontab' not in stderr:
+    if stderr and 'no crontab' not in str(stderr):
         raise ValueError('Could not delete crontab: \'%s\'' % stderr)

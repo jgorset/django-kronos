@@ -52,7 +52,13 @@ def register(schedule, *args, **kwargs):
                     temp_args = ",".join(map(str, value))
                     passed_args.append("{}={}".format(key, temp_args))
                 else:
-                    arg_text = "{}" if value is None else "{}={}"
+                    if value is None:
+                        arg_text = "{}"
+                    elif isinstance(value, str):
+                        arg_text = '{}="{}"'
+                    else:
+                        arg_text = '{}={}'
+
                     passed_args.append(arg_text.format(key, value))
 
         if hasattr(function, 'handle'):

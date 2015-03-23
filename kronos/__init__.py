@@ -55,9 +55,9 @@ def register(schedule, *args, **kwargs):
                     if value is None:
                         arg_text = "{}"
                     elif isinstance(value, str):
-                        arg_text = '{}="{}"'
+                        arg_text = '{} "{}"'
                     else:
-                        arg_text = '{}={}'
+                        arg_text = '{} {}'
 
                     passed_args.append(arg_text.format(key, value))
 

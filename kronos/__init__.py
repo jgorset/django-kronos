@@ -90,7 +90,7 @@ def install():
     Register tasks with cron.
     """
     load()
-    current_crontab = read_crontab()
+    current_crontab = read_crontab().decode()
 
     new_crontab = ''
     for task in tasks:
@@ -117,7 +117,7 @@ def uninstall():
     current_crontab = read_crontab()
 
     new_crontab = ''
-    for line in current_crontab.split('\n')[:-1]:
+    for line in current_crontab.decode().split('\n')[:-1]:
         exp = '%(python)s %(manage)s runtask' % {
             'python': KRONOS_PYTHON,
             'manage': KRONOS_MANAGE,

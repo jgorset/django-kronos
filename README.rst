@@ -53,7 +53,7 @@ If your management command accepts arguments, just pass them in the decorator::
 
     # app/management/commands/task.py
 
-    from django.core.management.base import NoArgsCommand
+    from django.core.management.base import BaseCommand
 
     import kronos
 

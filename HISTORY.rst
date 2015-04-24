@@ -1,3 +1,15 @@
+0.7.0
++++++
+
+* You may now pass arguments to Django management commands registered with Kronos.
+* Kronos is now compatible with Python 3.
+* Kronos will now log errors when it fails to load tasks.
+
+0.6.0
++++++
+
+* You may now register Django management commands.
+
 0.5.0
 +++++
 

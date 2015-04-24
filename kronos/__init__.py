@@ -38,19 +38,39 @@ def load():
         load_command_class(app, cmd)
 
 
-def register(schedule):
+def register(schedule, *args, **kwargs):
     def decorator(function):
         global tasks
+        passed_args = []
+
+        if "args" in kwargs:
+            for key, value in kwargs["args"].iteritems():
+                if isinstance(value, dict):
+                    raise TypeError('Parse for dict arguments not yet implemented.')
+
+                if isinstance(value, list):
+                    temp_args = ",".join(map(str, value))
+                    passed_args.append("{}={}".format(key, temp_args))
+                else:
+                    if value is None:
+                        arg_text = "{}"
+                    elif isinstance(value, str):
+                        arg_text = '{} "{}"'
+                    else:
+                        arg_text = '{} {}'
+
+                    passed_args.append(arg_text.format(key, value))
 
         if hasattr(function, 'handle'):
             # django command
             function.cron_expression = '%(schedule)s %(python)s %(manage)s ' \
-                '%(task)s --settings=%(settings_module)s %(postfix)s' \
+                '%(task)s %(passed_args)s --settings=%(settings_module)s %(postfix)s' \
                 '$KRONOS_BREAD_CRUMB' % {
                     'schedule': schedule,
                     'python': KRONOS_PYTHON,
                     'manage': KRONOS_MANAGE,
                     'task': function.__module__.split('.')[-1],
+                    'passed_args': " ".join(passed_args),
                     'settings_module': settings.SETTINGS_MODULE,
                     'postfix': KRONOS_POSTFIX
                 }
@@ -59,12 +79,13 @@ def register(schedule):
                 fn=function)
         else:
             function.cron_expression = '%(schedule)s %(python)s %(manage)s ' \
-                'runtask %(task)s --settings=%(settings_module)s ' \
+                'runtask %(task)s %(passed_args)s --settings=%(settings_module)s ' \
                 '%(postfix)s $KRONOS_BREAD_CRUMB' % {
                     'schedule': schedule,
                     'python': KRONOS_PYTHON,
                     'manage': KRONOS_MANAGE,
                     'task': function.__name__,
+                    'passed_args': " ".join(passed_args),
                     'settings_module': settings.SETTINGS_MODULE,
                     'postfix': KRONOS_POSTFIX
                 }

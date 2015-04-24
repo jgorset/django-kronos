@@ -50,6 +50,29 @@ If you have a task in a Django Command you can register it doing::
             print('command task')
 
 
+Tasks with arguments
+^^^^^^^^^^^^^^^^^^^^
+
+If you need to register with variable arguments, you can pass them using:
+
+    # app/cron.py
+
+    import kronos
+    import random
+
+    @kronos.register('0 0 * * *', args={"--arg1": None, "-b": "some-arg2", "--some-list": ["site1", "site2", "site3"]})
+    def complain():
+        complaints = [
+            "I forgot to migrate our applications's cron jobs to our new server! Darn!",
+            "I'm out of complaints! Damnit!"
+        ]
+
+        print random.choice(complaints)
+
+which will create the following crontab entry:
+
+    0 0 * * * /path/to/python /path/to/manage.py command --arg1 -b=some-arg2 --some-list=site1,site2,site3 --settings=geoviewer.settings &> /dev/null$KRONOS_BREAD_CRUMB
+
 
 Run tasks manually
 ^^^^^^^^^^^^^^^^^^

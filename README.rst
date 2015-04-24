@@ -57,7 +57,7 @@ If your management command accepts arguments, just pass them in the decorator::
 
     import kronos
 
-    @kronos.register('0 0 * * *', args={'--arg1
+    @kronos.register('0 0 * * *', args={'-l': 'nb'})
     class Command(BaseCommand):
 
         option_list = BaseCommand.option_list + (

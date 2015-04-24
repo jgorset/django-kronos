@@ -64,8 +64,8 @@ If your management command accepts arguments, just pass them in the decorator::
           make_option('-l', '--language',
             dest    = 'language',
             type    = 'string',
-            default = 'en'
-          )
+            default = 'en')
+        )
 
         def handle(self, *args, **options):
             if options['language'] == 'en':

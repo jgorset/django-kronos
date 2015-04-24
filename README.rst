@@ -36,7 +36,7 @@ Kronos collects tasks from ``cron`` modules in your project root and each of you
 
         print random.choice(complaints)
 
-If you have a task in a Django Command you can register it doing::
+Kronos works with Django management commands, too::
 
     # app/management/commands/task.py
 
@@ -47,31 +47,32 @@ If you have a task in a Django Command you can register it doing::
     @kronos.register('0 0 * * *')
     class Command(NoArgsCommand):
         def handle_noargs(self, **options):
-            print('command task')
+            print('Hello, world!')
 
+If your management command accepts arguments, just pass them in the decorator::
 
-Tasks with arguments
-^^^^^^^^^^^^^^^^^^^^
+    # app/management/commands/task.py
 
-If you need to register with variable arguments, you can pass them using:
-
-    # app/cron.py
+    from django.core.management.base import NoArgsCommand
 
     import kronos
-    import random
 
-    @kronos.register('0 0 * * *', args={"--arg1": None, "-b": "some-arg2", "--some-list": ["site1", "site2", "site3"]})
-    def complain():
-        complaints = [
-            "I forgot to migrate our applications's cron jobs to our new server! Darn!",
-            "I'm out of complaints! Damnit!"
-        ]
+    @kronos.register('0 0 * * *', args={'--arg1
+    class Command(BaseCommand):
 
-        print random.choice(complaints)
+        option_list = BaseCommand.option_list + (
+          make_option('-l', '--language',
+            dest    = 'language',
+            type    = 'string',
+            default = 'en'
+          )
 
-which will create the following crontab entry:
+        def handle(self, *args, **options):
+            if options['language'] == 'en':
+              print('Hello, world!')
 
-    0 0 * * * /path/to/python /path/to/manage.py command --arg1 -b=some-arg2 --some-list=site1,site2,site3 --settings=geoviewer.settings &> /dev/null$KRONOS_BREAD_CRUMB
+            if options['language'] == 'nb':
+              print('Hei, verden!')
 
 
 Run tasks manually

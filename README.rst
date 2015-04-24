@@ -1,7 +1,7 @@
 Kronos
 ======
 
-.. image:: https://secure.travis-ci.org/jgorset/django-kronos.png?branch=master
+.. image:: https://api.travis-ci.org/jgorset/django-kronos.svg?branch=master
 
 Kronos makes it really easy to schedule tasks with cron.
 

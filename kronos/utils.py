@@ -1,3 +1,4 @@
+import six
 import subprocess
 
 
@@ -14,7 +15,7 @@ def read_crontab():
 
     stdout, stderr = command.stdout.read(), command.stderr.read()
 
-    if stderr and 'no crontab for' not in stderr.decode():
+    if stderr and 'no crontab for' not in six.u(stderr):
         raise ValueError('Could not read from crontab: \'%s\'' % stderr)
 
     return stdout
@@ -50,5 +51,5 @@ def delete_crontab():
 
     stdout, stderr = command.stdout.read(), command.stderr.read()
 
-    if stderr and 'no crontab' not in stderr.decode():
+    if stderr and 'no crontab' not in six.u(stderr):
         raise ValueError('Could not delete crontab: \'%s\'' % stderr)

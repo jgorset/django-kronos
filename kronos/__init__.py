@@ -7,7 +7,7 @@ from kronos.settings import PROJECT_MODULE, KRONOS_PYTHON, KRONOS_MANAGE, \
 from django.conf import settings
 from kronos.utils import read_crontab, write_crontab, delete_crontab
 from kronos.version import __version__
-
+import six
 
 tasks = []
 
@@ -30,8 +30,8 @@ def load():
         try:
             import_module(p)
         except ImportError as e:
-            if e.message != 'No module named cron':
-                print e.message
+            if 'No module named' not in str(e):
+                print(e)
 
     # load django tasks
     for cmd, app in get_commands().items():
@@ -44,7 +44,7 @@ def register(schedule, *args, **kwargs):
         passed_args = []
 
         if "args" in kwargs:
-            for key, value in kwargs["args"].iteritems():
+            for key, value in six.iteritems(kwargs["args"]):
                 if isinstance(value, dict):
                     raise TypeError('Parse for dict arguments not yet implemented.')
 
@@ -111,7 +111,7 @@ def install():
     Register tasks with cron.
     """
     load()
-    current_crontab = read_crontab().decode()
+    current_crontab = six.u(read_crontab())
 
     new_crontab = ''
     for task in tasks:
@@ -138,7 +138,7 @@ def uninstall():
     current_crontab = read_crontab()
 
     new_crontab = ''
-    for line in current_crontab.decode().split('\n')[:-1]:
+    for line in six.u(current_crontab).split('\n')[:-1]:
         exp = '%(python)s %(manage)s runtask' % {
             'python': KRONOS_PYTHON,
             'manage': KRONOS_MANAGE,

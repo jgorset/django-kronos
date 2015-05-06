@@ -1,5 +1,6 @@
 from functools import wraps
 
+import django
 from django.core.management import get_commands, load_command_class
 from django.utils.importlib import import_module
 from kronos.settings import PROJECT_MODULE, KRONOS_PYTHON, KRONOS_MANAGE, \
@@ -35,7 +36,10 @@ def load():
 
     # load django tasks
     for cmd, app in get_commands().items():
-        load_command_class(app, cmd)
+        try:
+            load_command_class(app, cmd)
+        except django.core.exceptions.ImproperlyConfigured:
+            pass
 
 
 def register(schedule, *args, **kwargs):

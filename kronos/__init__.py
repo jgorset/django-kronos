@@ -4,7 +4,7 @@ import django
 from django.core.management import get_commands, load_command_class
 from django.utils.importlib import import_module
 from kronos.settings import PROJECT_MODULE, KRONOS_PYTHON, KRONOS_MANAGE, \
-    KRONOS_PYTHONPATH, KRONOS_POSTFIX
+    KRONOS_PYTHONPATH, KRONOS_POSTFIX, KRONOS_PREFIX
 from django.conf import settings
 from kronos.utils import read_crontab, write_crontab, delete_crontab
 from kronos.version import __version__
@@ -67,10 +67,11 @@ def register(schedule, *args, **kwargs):
 
         if hasattr(function, 'handle'):
             # django command
-            function.cron_expression = '%(schedule)s %(python)s %(manage)s ' \
+            function.cron_expression = '%(schedule)s %(prefix)s %(python)s %(manage)s ' \
                 '%(task)s %(passed_args)s --settings=%(settings_module)s %(postfix)s' \
                 '$KRONOS_BREAD_CRUMB' % {
                     'schedule': schedule,
+                    'prefix': KRONOS_PREFIX,
                     'python': KRONOS_PYTHON,
                     'manage': KRONOS_MANAGE,
                     'task': function.__module__.split('.')[-1],
@@ -82,10 +83,11 @@ def register(schedule, *args, **kwargs):
                 django_command=True,
                 fn=function)
         else:
-            function.cron_expression = '%(schedule)s %(python)s %(manage)s ' \
+            function.cron_expression = '%(schedule)s %(prefix)s %(python)s %(manage)s ' \
                 'runtask %(task)s %(passed_args)s --settings=%(settings_module)s ' \
                 '%(postfix)s $KRONOS_BREAD_CRUMB' % {
                     'schedule': schedule,
+                    'prefix': KRONOS_PREFIX,
                     'python': KRONOS_PYTHON,
                     'manage': KRONOS_MANAGE,
                     'task': function.__name__,

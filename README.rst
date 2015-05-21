@@ -135,6 +135,9 @@ KRONOS_PYTHONPATH
 KRONOS_POSTFIX
     Extra string added at the end of the command. For dirty thinks like '> /dev/null 2>&1'
 
+KRONOS_PREFIX
+    Extra string added at the beginning of the command. For dirty thinks like 'source /path/to/env &&'
+
 Define these variables in your ``settings.py`` file if you wish to alter crontab lines.
 
 The env variable ``$KRONOS_BREAD_CRUMB`` is defined to detect which tasks have to be deleted after

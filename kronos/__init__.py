@@ -2,7 +2,12 @@ from functools import wraps
 
 import django
 from django.core.management import get_commands, load_command_class
-from django.utils.importlib import import_module
+
+try:
+    from importlib import import_module
+except ImportError:
+    from django.utils.importlib import import_module
+
 from kronos.settings import PROJECT_MODULE, KRONOS_PYTHON, KRONOS_MANAGE, \
     KRONOS_PYTHONPATH, KRONOS_POSTFIX
 from django.conf import settings

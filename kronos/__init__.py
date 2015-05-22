@@ -147,7 +147,7 @@ def uninstall():
             'python': KRONOS_PYTHON,
             'manage': KRONOS_MANAGE,
             }
-        if '$KRONOS_BREAD_CRUMB' not in line and exp not in line:
+        if not ('$KRONOS_BREAD_CRUMB' in line and exp in line):
             new_crontab += '%s\n' % line
 
     if new_crontab:

@@ -9,7 +9,8 @@ def read_crontab():
         args='crontab -l',
         shell=True,
         stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE
+        stderr=subprocess.PIPE,
+        universal_newlines=True
     )
 
     stdout, stderr = command.stdout.read(), command.stderr.read()
@@ -28,7 +29,8 @@ def write_crontab(string):
         args='printf \'%s\' | crontab' % string.replace("'", "'\\''"),
         shell=True,
         stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE
+        stderr=subprocess.PIPE,
+        universal_newlines=True
     )
 
     stdout, stderr = command.stdout.read(), command.stderr.read()
@@ -45,7 +47,8 @@ def delete_crontab():
         args='crontab -r',
         shell=True,
         stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE
+        stderr=subprocess.PIPE,
+        universal_newlines=True
     )
 
     stdout, stderr = command.stdout.read(), command.stderr.read()

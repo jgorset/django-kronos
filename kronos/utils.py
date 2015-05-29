@@ -1,3 +1,4 @@
+import six
 import subprocess
 
 
@@ -9,12 +10,13 @@ def read_crontab():
         args='crontab -l',
         shell=True,
         stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE
+        stderr=subprocess.PIPE,
+        universal_newlines=True
     )
 
     stdout, stderr = command.stdout.read(), command.stderr.read()
 
-    if stderr and 'no crontab for' not in stderr.decode():
+    if stderr and 'no crontab for' not in six.u(stderr):
         raise ValueError('Could not read from crontab: \'%s\'' % stderr)
 
     return stdout
@@ -28,7 +30,8 @@ def write_crontab(string):
         args='printf \'%s\' | crontab' % string.replace("'", "'\\''"),
         shell=True,
         stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE
+        stderr=subprocess.PIPE,
+        universal_newlines=True
     )
 
     stdout, stderr = command.stdout.read(), command.stderr.read()
@@ -45,10 +48,11 @@ def delete_crontab():
         args='crontab -r',
         shell=True,
         stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE
+        stderr=subprocess.PIPE,
+        universal_newlines=True
     )
 
     stdout, stderr = command.stdout.read(), command.stderr.read()
 
-    if stderr and 'no crontab' not in stderr.decode():
+    if stderr and 'no crontab' not in six.u(stderr):
         raise ValueError('Could not delete crontab: \'%s\'' % stderr)

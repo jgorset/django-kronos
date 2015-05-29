@@ -46,7 +46,8 @@ class TestCase(TestCase):
             args='crontab -l',
             shell=True,
             stdout=PIPE,
-            stderr=PIPE
+            stderr=PIPE,
+            universal_newlines=True
         )
 
     @patch('subprocess.Popen')
@@ -83,7 +84,8 @@ class TestCase(TestCase):
             args='printf \'* * * * * echo\n\' | crontab',
             shell=True,
             stdout=PIPE,
-            stderr=PIPE
+            stderr=PIPE,
+            universal_newlines=True
         )
 
     def test_task_collection(self):

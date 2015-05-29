@@ -1,13 +1,19 @@
 from functools import wraps
 
+import django
 from django.core.management import get_commands, load_command_class
-from django.utils.importlib import import_module
+
+try:
+    from importlib import import_module
+except ImportError:
+    from django.utils.importlib import import_module
+
 from kronos.settings import PROJECT_MODULE, KRONOS_PYTHON, KRONOS_MANAGE, \
-    KRONOS_PYTHONPATH, KRONOS_POSTFIX
+    KRONOS_PYTHONPATH, KRONOS_POSTFIX, KRONOS_PREFIX
 from django.conf import settings
 from kronos.utils import read_crontab, write_crontab, delete_crontab
 from kronos.version import __version__
-
+import six
 
 tasks = []
 
@@ -30,12 +36,15 @@ def load():
         try:
             import_module(p)
         except ImportError as e:
-            if e.message != 'No module named cron':
-                print e.message
+            if 'No module named' not in str(e):
+                print(e)
 
     # load django tasks
     for cmd, app in get_commands().items():
-        load_command_class(app, cmd)
+        try:
+            load_command_class(app, cmd)
+        except django.core.exceptions.ImproperlyConfigured:
+            pass
 
 
 def register(schedule, *args, **kwargs):
@@ -44,7 +53,7 @@ def register(schedule, *args, **kwargs):
         passed_args = []
 
         if "args" in kwargs:
-            for key, value in kwargs["args"].iteritems():
+            for key, value in six.iteritems(kwargs["args"]):
                 if isinstance(value, dict):
                     raise TypeError('Parse for dict arguments not yet implemented.')
 
@@ -63,10 +72,11 @@ def register(schedule, *args, **kwargs):
 
         if hasattr(function, 'handle'):
             # django command
-            function.cron_expression = '%(schedule)s %(python)s %(manage)s ' \
+            function.cron_expression = '%(schedule)s %(prefix)s %(python)s %(manage)s ' \
                 '%(task)s %(passed_args)s --settings=%(settings_module)s %(postfix)s' \
                 '$KRONOS_BREAD_CRUMB' % {
                     'schedule': schedule,
+                    'prefix': KRONOS_PREFIX,
                     'python': KRONOS_PYTHON,
                     'manage': KRONOS_MANAGE,
                     'task': function.__module__.split('.')[-1],
@@ -78,10 +88,11 @@ def register(schedule, *args, **kwargs):
                 django_command=True,
                 fn=function)
         else:
-            function.cron_expression = '%(schedule)s %(python)s %(manage)s ' \
+            function.cron_expression = '%(schedule)s %(prefix)s %(python)s %(manage)s ' \
                 'runtask %(task)s %(passed_args)s --settings=%(settings_module)s ' \
                 '%(postfix)s $KRONOS_BREAD_CRUMB' % {
                     'schedule': schedule,
+                    'prefix': KRONOS_PREFIX,
                     'python': KRONOS_PYTHON,
                     'manage': KRONOS_MANAGE,
                     'task': function.__name__,
@@ -111,7 +122,7 @@ def install():
     Register tasks with cron.
     """
     load()
-    current_crontab = read_crontab().decode()
+    current_crontab = six.u(read_crontab())
 
     new_crontab = ''
     for task in tasks:
@@ -138,7 +149,7 @@ def uninstall():
     current_crontab = read_crontab()
 
     new_crontab = ''
-    for line in current_crontab.decode().split('\n')[:-1]:
+    for line in six.u(current_crontab).split('\n')[:-1]:
         exp = '%(python)s %(manage)s runtask' % {
             'python': KRONOS_PYTHON,
             'manage': KRONOS_MANAGE,

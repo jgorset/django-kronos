@@ -1,18 +1,6 @@
-Kronos
-======
+.. image::  https://raw.githubusercontent.com/jgorset/django-kronos/master/docs/banner.png
 
 .. image:: https://api.travis-ci.org/jgorset/django-kronos.svg?branch=master
-
-Kronos makes it really easy to schedule tasks with cron.
-
-Installation
-------------
-
-::
-
-    $ pip install django-kronos
-
-... and add ``kronos`` to ``INSTALLED_APPS``.
 
 Usage
 -----
@@ -139,6 +127,16 @@ Define these variables in your ``settings.py`` file if you wish to alter crontab
 
 The env variable ``$KRONOS_BREAD_CRUMB`` is defined to detect which tasks have to be deleted after
 being installed.
+
+Installation
+------------
+
+::
+
+    $ pip install django-kronos
+
+... and add ``kronos`` to ``INSTALLED_APPS``.
+
 
 Contribute
 ----------

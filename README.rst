@@ -1,6 +1,8 @@
 .. image::  https://raw.githubusercontent.com/jgorset/django-kronos/master/docs/banner.png
 
 .. image:: https://api.travis-ci.org/jgorset/django-kronos.svg?branch=master
+.. image:: https://img.shields.io/github/license/jgorset/django-kronos.svg
+.. image:: https://img.shields.io/pypi/v/django-kronos.svg
 
 Usage
 -----

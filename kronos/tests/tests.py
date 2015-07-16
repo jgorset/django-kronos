@@ -11,8 +11,9 @@ from subprocess import PIPE
 from django.core.management import call_command
 from django.test import TestCase
 from django.core.management.base import CommandError
-from kronos import tasks, load
+from kronos import tasks, load, find_existing_jobs
 from kronos.utils import read_crontab, write_crontab
+from kronos.settings import KRONOS_PYTHON, KRONOS_MANAGE
 from mock import Mock, patch
 
 
@@ -31,6 +32,20 @@ class TestCase(TestCase):
 
         call_command('uninstalltasks')
         self.assertTrue(mock.called)
+
+    def test_find_existing_jobs(self):
+        """Test uninstalling tasks with the ``uninstalltasks`` command."""
+        keep = '%(python)s %(manage)s runtask' % {
+            'python': KRONOS_PYTHON,
+            'manage': KRONOS_MANAGE,
+        }
+        keep2 = " keep_me $KRONOS_BREAD_CRUMB"
+        remove = keep + keep2
+        new_cron = find_existing_jobs("\n".join([keep, keep2, remove, ""]))
+        self.assertIn(keep, new_cron)
+        self.assertIn(keep2, new_cron)
+        self.assertNotIn(remove, new_cron)
+
 
     @patch('subprocess.Popen')
     def test_read_crontab(self, mock):

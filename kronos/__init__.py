@@ -135,12 +135,7 @@ def printtasks():
         print(task['fn'].cron_expression)
 
 
-def uninstall():
-    """
-    Uninstall tasks from cron.
-    """
-    current_crontab = read_crontab()
-
+def find_existing_jobs(current_crontab):
     new_crontab = ''
     for line in six.u(current_crontab).split('\n')[:-1]:
         exp = '%(python)s %(manage)s runtask' % {
@@ -149,6 +144,15 @@ def uninstall():
             }
         if not ('$KRONOS_BREAD_CRUMB' in line and exp in line):
             new_crontab += '%s\n' % line
+    return new_crontab
+
+
+def uninstall():
+    """
+    Uninstall tasks from cron.
+    """
+    current_crontab = read_crontab()
+    new_crontab = find_existing_jobs(current_crontab)
 
     if new_crontab:
         write_crontab(new_crontab)

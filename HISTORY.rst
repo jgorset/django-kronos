@@ -1,3 +1,11 @@
+0.8.0
++++++
+
+* Kronos is now even more compatible Python 3.
+* Kronos is no longer compatible with Python 2.6.
+* You may now prefix commands with ``KRONOS_PREFIX``.
+* Fix an issue where Kronos would not pick up on AppConfig apps.
+
 0.7.0
 +++++
 

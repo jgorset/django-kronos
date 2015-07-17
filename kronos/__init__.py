@@ -33,6 +33,8 @@ def load():
                     PROJECT_MODULE_NAME.split('.')[0:-1]))
         else:
             paths = []
+        for application in settings.INSTALLED_APPS:
+            paths.append('%s.cron' % application)
         for p in paths:
             try:
                 import_module(p)

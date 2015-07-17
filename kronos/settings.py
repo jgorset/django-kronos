@@ -11,3 +11,4 @@ try:
 except KeyError:
     PROJECT_MODULE_NAME = None
 KRONOS_POSTFIX = getattr(settings, 'KRONOS_POSTFIX', '')
+KRONOS_PREFIX = getattr(settings, 'KRONOS_PREFIX', '')

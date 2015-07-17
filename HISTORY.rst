@@ -1,3 +1,23 @@
+0.8.0
++++++
+
+* Kronos is now even more compatible Python 3.
+* Kronos is no longer compatible with Python 2.6.
+* You may now prefix commands with ``KRONOS_PREFIX``.
+* Fix an issue where Kronos would not pick up on AppConfig apps.
+
+0.7.0
++++++
+
+* You may now pass arguments to Django management commands registered with Kronos.
+* Kronos is now compatible with Python 3.
+* Kronos will now log errors when it fails to load tasks.
+
+0.6.0
++++++
+
+* You may now register Django management commands.
+
 0.5.0
 +++++
 

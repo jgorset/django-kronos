@@ -1,18 +1,8 @@
-Kronos
-======
+.. image::  https://raw.githubusercontent.com/jgorset/django-kronos/master/docs/banner.png
 
-.. image:: https://secure.travis-ci.org/jgorset/django-kronos.png?branch=master
-
-Kronos makes it really easy to schedule tasks with cron.
-
-Installation
-------------
-
-::
-
-    $ pip install django-kronos
-
-... and add ``kronos`` to ``INSTALLED_APPS``.
+.. image:: https://api.travis-ci.org/jgorset/django-kronos.svg?branch=master
+.. image:: https://img.shields.io/github/license/jgorset/django-kronos.svg
+.. image:: https://img.shields.io/pypi/v/django-kronos.svg
 
 Usage
 -----
@@ -36,7 +26,7 @@ Kronos collects tasks from ``cron`` modules in your project root and each of you
 
         print random.choice(complaints)
 
-If you have a task in a Django Command you can register it doing::
+Kronos works with Django management commands, too::
 
     # app/management/commands/task.py
 
@@ -47,8 +37,32 @@ If you have a task in a Django Command you can register it doing::
     @kronos.register('0 0 * * *')
     class Command(NoArgsCommand):
         def handle_noargs(self, **options):
-            print('command task')
+            print('Hello, world!')
 
+If your management command accepts arguments, just pass them in the decorator::
+
+    # app/management/commands/task.py
+
+    from django.core.management.base import BaseCommand
+
+    import kronos
+
+    @kronos.register('0 0 * * *', args={'-l': 'nb'})
+    class Command(BaseCommand):
+
+        option_list = BaseCommand.option_list + (
+          make_option('-l', '--language',
+            dest    = 'language',
+            type    = 'string',
+            default = 'en')
+        )
+
+        def handle(self, *args, **options):
+            if options['language'] == 'en':
+              print('Hello, world!')
+
+            if options['language'] == 'nb':
+              print('Hei, verden!')
 
 
 Run tasks manually
@@ -111,10 +125,23 @@ KRONOS_PYTHONPATH
 KRONOS_POSTFIX
     Extra string added at the end of the command. For dirty thinks like '> /dev/null 2>&1'
 
+KRONOS_PREFIX
+    Extra string added at the beginning of the command. For dirty thinks like 'source /path/to/env &&'
+
 Define these variables in your ``settings.py`` file if you wish to alter crontab lines.
 
 The env variable ``$KRONOS_BREAD_CRUMB`` is defined to detect which tasks have to be deleted after
 being installed.
+
+Installation
+------------
+
+::
+
+    $ pip install django-kronos
+
+... and add ``kronos`` to ``INSTALLED_APPS``.
+
 
 Contribute
 ----------

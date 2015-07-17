@@ -1,5 +1,5 @@
 from functools import wraps
-
+import sys
 import django
 from django.core.management import get_commands, load_command_class
 
@@ -24,8 +24,8 @@ def load():
     """
     try:
         from django.utils.module_loading import autodiscover_modules
-        autodiscover_modules('cron')
     except ImportError:
+        # discover cron modules without autodiscover_modules
         try:
             project_module_name = sys.modules['.'.join(settings.SETTINGS_MODULE.split('.')[:-1])].__name__
         except KeyError:
@@ -45,7 +45,8 @@ def load():
             except ImportError as e:
                 if 'No module named' not in str(e):
                     print(e)
-
+    else:
+        autodiscover_modules('cron')
     # load django tasks
     for cmd, app in get_commands().items():
         try:

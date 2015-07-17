@@ -36,9 +36,9 @@ def load():
         for p in paths:
             try:
                 import_module(p)
-        except ImportError as e:
-            if 'No module named' not in str(e):
-                print(e)
+            except ImportError as e:
+                if 'No module named' not in str(e):
+                    print(e)
 
     # load django tasks
     for cmd, app in get_commands().items():

@@ -1,5 +1,5 @@
 from functools import wraps
-
+import sys
 import django
 from django.core.management import get_commands, load_command_class
 
@@ -8,13 +8,12 @@ try:
 except ImportError:
     from django.utils.importlib import import_module
 
-from kronos.settings import PROJECT_MODULE, KRONOS_PYTHON, KRONOS_MANAGE, \
+from kronos.settings import KRONOS_PYTHON, KRONOS_MANAGE, \
     KRONOS_PYTHONPATH, KRONOS_POSTFIX, KRONOS_PREFIX
 from django.conf import settings
 from kronos.utils import read_crontab, write_crontab, delete_crontab
 from kronos.version import __version__
 import six
-from django.utils.module_loading import autodiscover_modules
 
 tasks = []
 
@@ -23,16 +22,31 @@ def load():
     """
     Load ``cron`` modules for applications listed in ``INSTALLED_APPS``.
     """
-    autodiscover_modules('cron')
-
-    if '.' in PROJECT_MODULE.__name__:
+    try:
+        from django.utils.module_loading import autodiscover_modules
+    except ImportError:
+        # discover cron modules without autodiscover_modules
         try:
-            import_module('%s.cron' % '.'.join(
-	            PROJECT_MODULE.__name__.split('.')[0:-1]))
-        except ImportError as e:
-            if 'No module named' not in str(e):
-                print(e)
+            project_module_name = sys.modules['.'.join(settings.SETTINGS_MODULE.split('.')[:-1])].__name__
+        except KeyError:
+            project_module_name = None
+            paths = []
+        else:
+            paths = ['%s.cron' % project_module_name]
+            if '.' in project_module_name:
+                paths.append('%s.cron' % '.'.join(
+                    project_module_name.split('.')[0:-1]))
 
+        for application in settings.INSTALLED_APPS:
+            paths.append('%s.cron' % application)
+        for p in paths:
+            try:
+                import_module(p)
+            except ImportError as e:
+                if 'No module named' not in str(e):
+                    print(e)
+    else:
+        autodiscover_modules('cron')
     # load django tasks
     for cmd, app in get_commands().items():
         try:

@@ -37,8 +37,7 @@ def load():
             try:
                 import_module(p)
             except ImportError as e:
-                if 'No module named' not in str(e):
-                    print(e)
+                print(e)
 
     # load django tasks
     for cmd, app in get_commands().items():

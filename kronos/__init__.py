@@ -8,13 +8,12 @@ try:
 except ImportError:
     from django.utils.importlib import import_module
 
-from kronos.settings import KRONOS_PYTHON, KRONOS_MANAGE, \
+from kronos.settings import PROJECT_MODULE_NAME, KRONOS_PYTHON, KRONOS_MANAGE, \
     KRONOS_PYTHONPATH, KRONOS_POSTFIX, KRONOS_PREFIX
 from django.conf import settings
 from kronos.utils import read_crontab, write_crontab, delete_crontab
 from kronos.version import __version__
 import six
-from django.utils.module_loading import autodiscover_modules
 
 tasks = []
 
@@ -23,7 +22,23 @@ def load():
     """
     Load ``cron`` modules for applications listed in ``INSTALLED_APPS``.
     """
-    autodiscover_modules('cron')
+    try:
+        from django.utils.module_loading import autodiscover_modules
+        autodiscover_modules('cron')
+    except ImportError:
+        if PROJECT_MODULE_NAME:
+            paths = ['%s.cron' % PROJECT_MODULE_NAME]
+            if '.' in PROJECT_MODULE_NAME:
+                paths.append('%s.cron' % '.'.join(
+                    PROJECT_MODULE_NAME.split('.')[0:-1]))
+        else:
+            paths = []
+        for p in paths:
+            try:
+                import_module(p)
+        except ImportError as e:
+            if 'No module named' not in str(e):
+                print(e)
 
     # load django tasks
     for cmd, app in get_commands().items():

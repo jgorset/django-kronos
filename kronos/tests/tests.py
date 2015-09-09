@@ -6,14 +6,11 @@ try:
     from StringIO import StringIO
 except ImportError:
     from io import StringIO
-from subprocess import PIPE
 
 from django.core.management import call_command
 from django.test import TestCase
 from django.core.management.base import CommandError
-from kronos import tasks, load, find_existing_jobs
-from kronos.utils import read_crontab, write_crontab
-from kronos.settings import KRONOS_PYTHON, KRONOS_MANAGE
+from kronos import registry as tasks, load
 from mock import Mock, patch
 
 
@@ -32,76 +29,6 @@ class TestCase(TestCase):
 
         call_command('uninstalltasks')
         self.assertTrue(mock.called)
-
-    def test_find_existing_jobs(self):
-        """Test uninstalling tasks with the ``uninstalltasks`` command."""
-        keep = '%(python)s %(manage)s runtask' % {
-            'python': KRONOS_PYTHON,
-            'manage': KRONOS_MANAGE,
-        }
-        keep2 = " keep_me $KRONOS_BREAD_CRUMB"
-        remove = keep + keep2
-        new_cron = find_existing_jobs("\n".join([keep, keep2, remove, ""]))
-        self.assertIn(keep, new_cron)
-        self.assertIn(keep2, new_cron)
-        self.assertNotIn(remove, new_cron)
-
-
-    @patch('subprocess.Popen')
-    def test_read_crontab(self, mock):
-        """Test reading from the crontab."""
-        mock.return_value = Mock(
-            stdout=StringIO('crontab: installing new crontab'),
-            stderr=StringIO('')
-        )
-
-        read_crontab()
-
-        mock.assert_called_with(
-            args='crontab -l',
-            shell=True,
-            stdout=PIPE,
-            stderr=PIPE,
-            universal_newlines=True
-        )
-
-    @patch('subprocess.Popen')
-    def test_read_empty_crontab(self, mock):
-        """Test reading from an empty crontab."""
-        mock.return_value = Mock(
-            stdout=StringIO(''),
-            stderr=StringIO('crontab: no crontab for <user>')
-        )
-
-        read_crontab()
-
-    @patch('subprocess.Popen')
-    def test_read_crontab_with_errors(self, mock):
-        """Test reading from the crontab."""
-        mock.return_value = Mock(
-            stdout=StringIO(''),
-            stderr=StringIO('bash: crontal: command not found')
-        )
-
-        self.assertRaises(ValueError, read_crontab)
-
-    @patch('subprocess.Popen')
-    def test_write_crontab(self, mock):
-        """Test writing to the crontab."""
-        mock.return_value = Mock(
-            stdout=StringIO('crontab: installing new crontab'),
-            stderr=StringIO('')
-        )
-
-        write_crontab("* * * * * echo\n")
-
-        mock.assert_called_with(
-            args='printf \'* * * * * echo\n\' | crontab',
-            shell=True,
-            stdout=PIPE,
-            stderr=PIPE,
-            universal_newlines=True
-        )
 
     def test_task_collection(self):
         """Test task collection."""

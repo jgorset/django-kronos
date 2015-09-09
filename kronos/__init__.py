@@ -25,13 +25,14 @@ def load():
     """
     autodiscover_modules('cron')
 
-    if '.' in PROJECT_MODULE.__name__:
-        try:
-            import_module('%s.cron' % '.'.join(
-	            PROJECT_MODULE.__name__.split('.')[0:-1]))
-        except ImportError as e:
-            if 'No module named' not in str(e):
-                print(e)
+    if PROJECT_MODULE:
+        if '.' in PROJECT_MODULE.__name__:
+            try:
+                import_module('%s.cron' % '.'.join(
+                    PROJECT_MODULE.__name__.split('.')[0:-1]))
+            except ImportError as e:
+                if 'No module named' not in str(e):
+                    print(e)
 
     # load django tasks
     for cmd, app in get_commands().items():

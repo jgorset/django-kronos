@@ -1,6 +1,7 @@
 import sys
 import kronos.tests.project.app
 import kronos.tests.project.cron
+import mock
 
 try:
     from StringIO import StringIO
@@ -10,25 +11,33 @@ except ImportError:
 from django.core.management import call_command
 from django.test import TestCase
 from django.core.management.base import CommandError
+from crontab import CronTab
+from kronos.settings import KRONOS_BREADCRUMB
 from kronos import registry, load
-from mock import Mock, patch
+
+
+crontab = CronTab('')
+
+def get_crontab(*args, **kwargs):
+    return crontab
 
 
 class TestCase(TestCase):
 
     def setUp(self):
         load()
+        crontab.remove_all()
 
-    @patch('subprocess.Popen')
-    def test_unintalltasks(self, mock):
-        """Test uninstalling tasks with the ``uninstalltasks`` command."""
-        mock.return_value = Mock(
-            stdout=StringIO('crontab: installing new crontab'),
-            stderr=StringIO('')
-        )
-
-        call_command('uninstalltasks')
-        self.assertTrue(mock.called)
+    # @patch('subprocess.Popen')
+    # def test_unintalltasks(self, mock):
+    #     """Test uninstalling tasks with the ``uninstalltasks`` command."""
+    #     mock.return_value = Mock(
+    #         stdout=StringIO('crontab: installing new crontab'),
+    #         stderr=StringIO('')
+    #     )
+    #
+    #     call_command('uninstalltasks')
+    #     self.assertTrue(mock.called)
 
     def test_task_collection(self):
         """Test task collection."""
@@ -49,31 +58,21 @@ class TestCase(TestCase):
         self.assertRaises(CommandError,
             lambda: call_command('runtask', 'task'))
 
-    @patch('subprocess.Popen')
-    def test_installtasks(self, mock):
+    @mock.patch('crontab.CronTab', autospec=True, side_effect=get_crontab)
+    def test_installtasks(self, _):
         """Test installing tasks with the ``installtasks`` command."""
-        mock.return_value = Mock(
-            stdout=StringIO('crontab: installing new crontab'),
-            stderr=StringIO('')
-        )
-
         call_command('installtasks')
+        self.assertTrue(any(['runtask praise' in cmd for cmd in crontab.commands]))
+        self.assertTrue(any(['runtask complain' in cmd for cmd in crontab.commands]))
+        self.assertTrue(any(['manage.py task' in cmd for cmd in crontab.commands]))
+        self.assertIn(KRONOS_BREADCRUMB, crontab.comments)
 
-        self.assertTrue(mock.called)
-
-    @patch('subprocess.Popen')
-    def test_installed_tasks(self, mock):
-        """Test installing tasks with the ``installtasks`` command."""
-        mock.return_value = Mock(
-            stdout=StringIO('crontab: installing new crontab'),
-            stderr=StringIO('')
-        )
-
+    @mock.patch('crontab.CronTab', autospec=True, side_effect=get_crontab)
+    def test_uninstalltasks(self, _):
+        """Test uninstalling tasks with the ``uninstalltasks`` command."""
         call_command('installtasks')
-        calls = str(mock.mock_calls[-1])
-        self.assertIn('runtask praise', calls)
-        self.assertIn('runtask complain', calls)
-        self.assertIn('manage.py task', calls)
+        call_command('uninstalltasks')
+        self.assertEqual(len(list(crontab.commands)), 0)
 
     def test_list_tasks(self):
         sys.stdout = StringIO()
@@ -83,3 +82,14 @@ class TestCase(TestCase):
         self.assertIn('complain', val)
         self.assertIn('praise', val)
         self.assertIn('task', val)
+
+    @mock.patch('crontab.CronTab', autospec=True, side_effect=get_crontab)
+    def test_third_party(self, _):
+        """Test third party cron jobs are left as they are"""
+        crontab.new(command='/bin/true')
+
+        call_command('installtasks')
+        self.assertTrue(len(list(crontab.commands)), 10)
+
+        call_command('uninstalltasks')
+        self.assertTrue(len(list(crontab.commands)), 1)

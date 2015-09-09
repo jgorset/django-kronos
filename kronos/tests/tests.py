@@ -10,7 +10,7 @@ except ImportError:
 from django.core.management import call_command
 from django.test import TestCase
 from django.core.management.base import CommandError
-from kronos import registry as tasks, load
+from kronos import registry, load
 from mock import Mock, patch
 
 
@@ -33,11 +33,11 @@ class TestCase(TestCase):
     def test_task_collection(self):
         """Test task collection."""
         self.assertIn(kronos.tests.project.app.cron.complain.__name__,
-            [task['name'] for task in tasks])
+            [task.name for task in registry])
         self.assertIn(kronos.tests.project.cron.praise.__name__,
-            [task['name'] for task in tasks])
+            [task.name for task in registry])
         self.assertIn('task',
-            [task['name'] for task in tasks])
+            [task.name for task in registry])
 
     def test_runtask(self):
         """Test running tasks via the ``runtask`` command."""

@@ -2,7 +2,7 @@ import os
 import sys
 import hashlib
 
-from django.utils.encoding import smart_str
+from django.utils.encoding import smart_bytes
 from django.conf import settings
 
 KRONOS_PYTHON = getattr(settings, 'KRONOS_PYTHON', sys.executable)
@@ -12,13 +12,16 @@ KRONOS_POSTFIX = getattr(settings, 'KRONOS_POSTFIX', '')
 KRONOS_PREFIX = getattr(settings, 'KRONOS_PREFIX', '')
 
 try:
-    PROJECT_MODULE = sys.modules['.'.join(settings.SETTINGS_MODULE.split('.')[:-1])]
+    PROJECT_MODULE = \
+        sys.modules['.'.join(settings.SETTINGS_MODULE.split('.')[:-1])]
 except KeyError:
     PROJECT_MODULE = None
 
 def get_default_breadcrumb():
-    hash = hashlib.md5('kronos:{}'.format(smart_str(settings.SECRET_KEY))).hexdigest()
+    hash = hashlib.md5('kronos:{}'.format(
+        smart_bytes(settings.SECRET_KEY))).hexdigest()
     res = 'kronos:{}'.format(hash)
     return res
 
-KRONOS_BREADCRUMB = getattr(settings, 'KRONOS_BREADCRUMB', get_default_breadcrumb())
+KRONOS_BREADCRUMB = getattr(settings,
+    'KRONOS_BREADCRUMB', get_default_breadcrumb())

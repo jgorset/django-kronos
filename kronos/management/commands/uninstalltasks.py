@@ -7,4 +7,5 @@ class Command(NoArgsCommand):
     help = 'Remove tasks from cron'
 
     def handle_noargs(self, **options):
-        uninstall()
+        count = uninstall()
+        print('{} tasks removed'.format(count))

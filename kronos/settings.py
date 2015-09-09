@@ -1,5 +1,6 @@
 import os
 import sys
+import hashlib
 
 from django.conf import settings
 
@@ -13,3 +14,10 @@ try:
     PROJECT_MODULE = sys.modules['.'.join(settings.SETTINGS_MODULE.split('.')[:-1])]
 except KeyError:
     PROJECT_MODULE = None
+
+def get_default_breadcrumb():
+    hash = hashlib.md5('kronos:{}'.format(settings.SECRET_KEY)).hexdigest()
+    res = 'kronos:{}'.format(hash)
+    return res
+
+KRONOS_BREADCRUMB = getattr(settings, 'KRONOS_BREADCRUMB', get_default_breadcrumb())

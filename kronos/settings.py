@@ -18,8 +18,8 @@ except KeyError:
     PROJECT_MODULE = None
 
 def get_default_breadcrumb():
-    hash = hashlib.md5('kronos:{}'.format(
-        smart_bytes(settings.SECRET_KEY))).hexdigest()
+    string = smart_bytes('kronos:{}'.format(settings.SECRET_KEY))  
+    hash = hashlib.md5(string).hexdigest()
     res = 'kronos:{}'.format(hash)
     return res
 

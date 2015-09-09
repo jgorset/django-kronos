@@ -17,7 +17,7 @@ import six
 from django.utils.module_loading import autodiscover_modules
 
 
-Task = collections.namedtuple('Task', ['name', 'schedule', 'command', 'django_command'])
+Task = collections.namedtuple('Task', ['name', 'schedule', 'command', 'function'])
 
 registry = set()
 
@@ -92,11 +92,11 @@ def register(schedule, args=None):
         }
 
         if hasattr(function, 'handle'):
-            django_command = True
+            func = None
             tmpl = DJANGO_TEMPLATE
             name = function.__module__.split('.')[-1]
         else:
-            django_command = False
+            func = function
             tmpl = KRONOS_TEMPLATE
             name = function.__name__
 
@@ -104,7 +104,7 @@ def register(schedule, args=None):
         if KRONOS_PYTHONPATH is not None:
             command += ' --pythonpath=%s' % KRONOS_PYTHONPATH
 
-        registry.add(Task(name, schedule, command, django_command))
+        registry.add(Task(name, schedule, command, func))
 
         @wraps(function)
         def wrapper(*args, **kwargs):

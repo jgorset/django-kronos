@@ -12,10 +12,10 @@ class Command(BaseCommand):
 
         print('>> Kronos tasks')
         for task in kronos.registry:
-            if not task.django_command:
+            if task.function:
                 print('    >> {0}'.format(task.name))
 
         print('>> Django tasks')
         for task in kronos.registry:
-            if task.django_command:
+            if not task.function:
                 print('    >> {0}'.format(task.name))

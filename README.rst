@@ -123,10 +123,11 @@ KRONOS_PYTHONPATH
     Extra path which will be added as a ``--pythonpath`` option to the management command.
 
 KRONOS_POSTFIX
-    Extra string added at the end of the command. For dirty thinks like '> /dev/null 2>&1'
+    Extra string added at the end of the command. For dirty thinks like ``> /dev/null 2>&1``
 
 KRONOS_PREFIX
-    Extra string added at the beginning of the command. For dirty thinks like 'source /path/to/env &&'
+    Extra string added at the beginning of the command. For dirty thinks like ``source /path/to/env &&``.
+    If you use the ``virtualenv``, you can add the environment path by ``echo "KRONOS_PREFIX = 'source `echo $VIRTUAL_ENV`/bin/activate && '" >> myprpoject/settings.py``
 
 Define these variables in your ``settings.py`` file if you wish to alter crontab lines.
 

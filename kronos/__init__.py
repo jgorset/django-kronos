@@ -14,7 +14,6 @@ from django.conf import settings
 from kronos.utils import read_crontab, write_crontab, delete_crontab
 from kronos.version import __version__
 import six
-from django.utils.module_loading import autodiscover_modules
 
 tasks = []
 
@@ -23,16 +22,27 @@ def load():
     """
     Load ``cron`` modules for applications listed in ``INSTALLED_APPS``.
     """
-    autodiscover_modules('cron')
+    paths = []
+    if PROJECT_MODULE is not None:
+        modname = PROJECT_MODULE.__name__
+        if '.' in modname:
+            paths.append('%s.cron' % '.'.join(modname.split('.')[0:-1]))
 
-    if '.' in PROJECT_MODULE.__name__:
+    try:
+        from django.utils.module_loading import autodiscover_modules
+    except ImportError:
+        for application in settings.INSTALLED_APPS:
+            paths.append('%s.cron' % application)
+    else:
+        autodiscover_modules('cron')
+
+    for p in paths:
         try:
-            import_module('%s.cron' % '.'.join(
-	            PROJECT_MODULE.__name__.split('.')[0:-1]))
+            import_module(p)
         except ImportError as e:
             if 'No module named' not in str(e):
                 print(e)
-
+    
     # load django tasks
     for cmd, app in get_commands().items():
         try:

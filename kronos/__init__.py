@@ -9,7 +9,7 @@ except ImportError:
     from django.utils.importlib import import_module
 
 from kronos.settings import PROJECT_MODULE, KRONOS_PYTHON, KRONOS_MANAGE, \
-    KRONOS_PYTHONPATH, KRONOS_POSTFIX, KRONOS_PREFIX
+    KRONOS_PYTHONPATH, KRONOS_POSTFIX, KRONOS_PREFIX, KRONOS_ENV
 from django.conf import settings
 from kronos.utils import read_crontab, write_crontab, delete_crontab
 from kronos.version import __version__
@@ -119,6 +119,10 @@ def install():
     current_crontab = six.u(read_crontab())
 
     new_crontab = ''
+
+    for env_line in KRONOS_ENV.splitlines():
+        new_crontab += '# KRONOS_ENV_BREAD_CRUMB for next\n%s\n' % env_line
+
     for task in tasks:
         new_crontab += '%s\n' % task['fn'].cron_expression
 
@@ -137,15 +141,27 @@ def printtasks():
 
 
 def find_existing_jobs(current_crontab):
-    new_crontab = ''
-    for line in six.u(current_crontab).split('\n')[:-1]:
-        exp = '%(python)s %(manage)s runtask' % {
-            'python': KRONOS_PYTHON,
-            'manage': KRONOS_MANAGE,
-            }
+    remaining = []
+    exp = '%(python)s %(manage)s runtask' % {
+        'python': KRONOS_PYTHON,
+        'manage': KRONOS_MANAGE,
+        }
+    for line in six.u(current_crontab).splitlines():
         if not ('$KRONOS_BREAD_CRUMB' in line and exp in line):
-            new_crontab += '%s\n' % line
-    return new_crontab
+             remaining.append(line)
+
+    without_env = []
+    skip = False
+    for line in remaining:
+        if 'KRONOS_ENV_BREAD_CRUMB' in line:
+            skip = True
+            continue
+        if skip:
+            skip = False
+            continue
+        without_env += [line]
+
+    return "\n".join(without_env)
 
 
 def uninstall():

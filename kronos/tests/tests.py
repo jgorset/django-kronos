@@ -46,7 +46,6 @@ class TestCase(TestCase):
         }
         keep2 = " keep_me $KRONOS_BREAD_CRUMB"
         remove = keep + keep2
-        import pdb; pdb.set_trace()
         new_cron = find_existing_jobs(env + "\n".join([
             keep, keep2, remove, ""]))
         self.assertIn(keep, new_cron)

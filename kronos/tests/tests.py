@@ -23,7 +23,7 @@ class TestCase(TestCase):
         load()
 
     @patch('subprocess.Popen')
-    def test_unintalltasks(self, mock):
+    def test_uninstalltasks(self, mock):
         """Test uninstalling tasks with the ``uninstalltasks`` command."""
         mock.return_value = Mock(
             stdout=StringIO('crontab: installing new crontab'),
@@ -35,16 +35,27 @@ class TestCase(TestCase):
 
     def test_find_existing_jobs(self):
         """Test uninstalling tasks with the ``uninstalltasks`` command."""
+        env = """EXISTING1=other1
+        # KRONOS_ENV_BREAD_CRUMB for next line
+        INSERTED_BY_KRONOS=important
+        EXISTING2=other2
+        """
         keep = '%(python)s %(manage)s runtask' % {
             'python': KRONOS_PYTHON,
             'manage': KRONOS_MANAGE,
         }
         keep2 = " keep_me $KRONOS_BREAD_CRUMB"
         remove = keep + keep2
-        new_cron = find_existing_jobs("\n".join([keep, keep2, remove, ""]))
+        new_cron = find_existing_jobs(env + "\n".join([
+            keep, keep2, remove, ""]))
         self.assertIn(keep, new_cron)
         self.assertIn(keep2, new_cron)
         self.assertNotIn(remove, new_cron)
+
+        self.assertIn('EXISTING1', new_cron)
+        self.assertIn('EXISTING2', new_cron)
+        self.assertNotIn('KRONOS_ENV_BREAD_CRUMB', new_cron)
+        self.assertNotIn('INSERTED_BY_KRONOS', new_cron)
 
 
     @patch('subprocess.Popen')
@@ -134,6 +145,7 @@ class TestCase(TestCase):
 
         self.assertTrue(mock.called)
 
+    @patch('kronos.KRONOS_ENV', """FOO=bar\nBLACK=white""")
     @patch('subprocess.Popen')
     def test_installed_tasks(self, mock):
         """Test installing tasks with the ``installtasks`` command."""
@@ -141,9 +153,10 @@ class TestCase(TestCase):
             stdout=StringIO('crontab: installing new crontab'),
             stderr=StringIO('')
         )
-
         call_command('installtasks')
         calls = str(mock.mock_calls[-1])
+        self.assertIn('FOO=bar', calls)
+        self.assertIn('runtask praise', calls)
         self.assertIn('runtask praise', calls)
         self.assertIn('runtask complain', calls)
         self.assertIn('manage.py task', calls)

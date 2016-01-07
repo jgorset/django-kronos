@@ -1,5 +1,6 @@
 from functools import wraps
-
+import collections
+import crontab
 import django
 from django.core.management import get_commands, load_command_class
 
@@ -9,14 +10,16 @@ except ImportError:
     from django.utils.importlib import import_module
 
 from kronos.settings import PROJECT_MODULE, KRONOS_PYTHON, KRONOS_MANAGE, \
-    KRONOS_PYTHONPATH, KRONOS_POSTFIX, KRONOS_PREFIX
+    KRONOS_PYTHONPATH, KRONOS_POSTFIX, KRONOS_PREFIX, KRONOS_BREADCRUMB
 from django.conf import settings
-from kronos.utils import read_crontab, write_crontab, delete_crontab
 from kronos.version import __version__
 import six
 from django.utils.module_loading import autodiscover_modules
 
-tasks = []
+
+Task = collections.namedtuple('Task', ['name', 'schedule', 'command', 'function'])
+
+registry = set()
 
 
 def load():
@@ -25,13 +28,14 @@ def load():
     """
     autodiscover_modules('cron')
 
-    if '.' in PROJECT_MODULE.__name__:
-        try:
-            import_module('%s.cron' % '.'.join(
-	            PROJECT_MODULE.__name__.split('.')[0:-1]))
-        except ImportError as e:
-            if 'No module named' not in str(e):
-                print(e)
+    if PROJECT_MODULE:
+        if '.' in PROJECT_MODULE.__name__:
+            try:
+                import_module('%s.cron' % '.'.join(
+                    PROJECT_MODULE.__name__.split('.')[0:-1]))
+            except ImportError as e:
+                if 'No module named' not in str(e):
+                    print(e)
 
     # load django tasks
     for cmd, app in get_commands().items():
@@ -41,67 +45,66 @@ def load():
             pass
 
 
-def register(schedule, *args, **kwargs):
+KRONOS_TEMPLATE = \
+    '%(prefix)s %(python)s %(manage)s ' \
+    'runtask %(name)s %(passed_args)s --settings=%(settings_module)s ' \
+    '%(postfix)s'
+
+DJANGO_TEMPLATE = \
+    '%(prefix)s %(python)s %(manage)s ' \
+    '%(name)s %(passed_args)s --settings=%(settings_module)s ' \
+    '%(postfix)s'
+
+
+def process_args(args):
+    res = []
+    for key, value in six.iteritems(args):
+        if isinstance(value, dict):
+            raise TypeError('Parse for dict arguments not yet implemented.')
+
+        if isinstance(value, list):
+            temp_args = ",".join(map(str, value))
+            res.append("{}={}".format(key, temp_args))
+        else:
+            if value is None:
+                arg_text = "{}"
+            elif isinstance(value, str):
+                arg_text = '{}="{}"'
+            else:
+                arg_text = '{}={}'
+            res.append(arg_text.format(key, value))
+    return res
+
+
+def register(schedule, args=None):
     def decorator(function):
-        global tasks
-        passed_args = []
+        global registry_kronos, registry_django
 
-        if "args" in kwargs:
-            for key, value in six.iteritems(kwargs["args"]):
-                if isinstance(value, dict):
-                    raise TypeError('Parse for dict arguments not yet implemented.')
+        passed_args = process_args(args) if args is not None else []
 
-                if isinstance(value, list):
-                    temp_args = ",".join(map(str, value))
-                    passed_args.append("{}={}".format(key, temp_args))
-                else:
-                    if value is None:
-                        arg_text = "{}"
-                    elif isinstance(value, str):
-                        arg_text = '{} "{}"'
-                    else:
-                        arg_text = '{} {}'
-
-                    passed_args.append(arg_text.format(key, value))
+        ctx = {
+            'prefix': KRONOS_PREFIX,
+            'python': KRONOS_PYTHON,
+            'manage': KRONOS_MANAGE,
+            'passed_args': ' '.join(passed_args),
+            'settings_module': settings.SETTINGS_MODULE,
+            'postfix': KRONOS_POSTFIX
+        }
 
         if hasattr(function, 'handle'):
-            # django command
-            function.cron_expression = '%(schedule)s %(prefix)s %(python)s %(manage)s ' \
-                '%(task)s %(passed_args)s --settings=%(settings_module)s %(postfix)s' \
-                '$KRONOS_BREAD_CRUMB' % {
-                    'schedule': schedule,
-                    'prefix': KRONOS_PREFIX,
-                    'python': KRONOS_PYTHON,
-                    'manage': KRONOS_MANAGE,
-                    'task': function.__module__.split('.')[-1],
-                    'passed_args': " ".join(passed_args),
-                    'settings_module': settings.SETTINGS_MODULE,
-                    'postfix': KRONOS_POSTFIX
-                }
-            task = dict(name=function.__module__.split('.')[-1],
-                django_command=True,
-                fn=function)
+            func = None
+            tmpl = DJANGO_TEMPLATE
+            name = function.__module__.split('.')[-1]
         else:
-            function.cron_expression = '%(schedule)s %(prefix)s %(python)s %(manage)s ' \
-                'runtask %(task)s %(passed_args)s --settings=%(settings_module)s ' \
-                '%(postfix)s $KRONOS_BREAD_CRUMB' % {
-                    'schedule': schedule,
-                    'prefix': KRONOS_PREFIX,
-                    'python': KRONOS_PYTHON,
-                    'manage': KRONOS_MANAGE,
-                    'task': function.__name__,
-                    'passed_args': " ".join(passed_args),
-                    'settings_module': settings.SETTINGS_MODULE,
-                    'postfix': KRONOS_POSTFIX
-                }
-            task = dict(name=function.__name__,
-                django_command=False,
-                fn=function)
+            func = function
+            tmpl = KRONOS_TEMPLATE
+            name = function.__name__
 
+        command = tmpl % dict(ctx, name=name)
         if KRONOS_PYTHONPATH is not None:
-            function.cron_expression += ' --pythonpath=%s' % KRONOS_PYTHONPATH
+            command += ' --pythonpath=%s' % KRONOS_PYTHONPATH
 
-        tasks.append(task)
+        registry.add(Task(name, schedule, command, func))
 
         @wraps(function)
         def wrapper(*args, **kwargs):
@@ -116,13 +119,11 @@ def install():
     Register tasks with cron.
     """
     load()
-    current_crontab = six.u(read_crontab())
-
-    new_crontab = ''
-    for task in tasks:
-        new_crontab += '%s\n' % task['fn'].cron_expression
-
-    write_crontab(current_crontab + new_crontab)
+    tab = crontab.CronTab(user=True)
+    for task in registry:
+        tab.new(task.command, KRONOS_BREADCRUMB).setall(task.schedule)
+    tab.write()
+    return len(registry)
 
 
 def printtasks():
@@ -132,35 +133,22 @@ def printtasks():
     """
     load()
 
-    for task in tasks:
-        print(task['fn'].cron_expression)
-
-
-def find_existing_jobs(current_crontab):
-    new_crontab = ''
-    for line in six.u(current_crontab).split('\n')[:-1]:
-        exp = '%(python)s %(manage)s runtask' % {
-            'python': KRONOS_PYTHON,
-            'manage': KRONOS_MANAGE,
-            }
-        if not ('$KRONOS_BREAD_CRUMB' in line and exp in line):
-            new_crontab += '%s\n' % line
-    return new_crontab
+    tab = crontab.CronTab('')
+    for task in registry:
+        tab.new(task.command, KRONOS_BREADCRUMB).setall(task.schedule)
+    print(tab.render())
 
 
 def uninstall():
     """
     Uninstall tasks from cron.
     """
-    current_crontab = read_crontab()
-    new_crontab = find_existing_jobs(current_crontab)
-
-    if new_crontab:
-        write_crontab(new_crontab)
-    else:
-        delete_crontab()
+    tab = crontab.CronTab(user=True)
+    count = len(list(tab.find_comment(KRONOS_BREADCRUMB)))
+    tab.remove_all(comment=KRONOS_BREADCRUMB)
+    tab.write()
+    return count
 
 
 def reinstall():
-    uninstall()
-    install()
+    return uninstall(), install()

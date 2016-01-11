@@ -19,4 +19,9 @@ setup(
     packages=['kronos'],
     include_package_data=True,
     zip_safe=False,
+    install_requires=[
+        'django>=1.7',
+        'python-crontab>=1.9.0',
+        'six>=1.9.0',
+    ]
 )

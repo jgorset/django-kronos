@@ -1,8 +1,12 @@
 language: python
-python:
-  - "2.7"
-  - "3.2"
-  - "3.3"
-  - "3.4"
-install: pip install -r requirements.txt --use-mirrors
-script: python manage.py test
+env:
+    - TOXENV=django17-py27
+    - TOXENV=django18-py27
+    - TOXENV=django17-py33
+    - TOXENV=django18-py33
+    - TOXENV=django17-py34
+    - TOXENV=django18-py34
+install:
+    - pip install tox
+script:
+    - tox

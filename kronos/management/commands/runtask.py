@@ -10,10 +10,10 @@ class Command(BaseCommand):
     def handle(self, task_name, **options):
         kronos.load()
 
-        for task in kronos.tasks:
-            if task['name'] == task_name:
-                if not task['django_command']:
-                    return task['fn']()
+        for task in kronos.registry:
+            if task.name == task_name:
+                if task.function:
+                    return task.function()
                 else:
                     raise CommandError('This is a django command. You have '
                         'to run it via python manage.py {0}'

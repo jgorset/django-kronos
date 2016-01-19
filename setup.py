@@ -15,7 +15,7 @@ setup(
     long_description=readme + '\n\n' + history,
     author='Johannes Gorset',
     author_email='jgorset@gmail.com ',
-    url='http://github.com/jgorset/kronos',
+    url='http://github.com/jgorset/django-kronos',
     packages=['kronos'],
     include_package_data=True,
     zip_safe=False,

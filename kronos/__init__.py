@@ -62,19 +62,17 @@ def process_args(args):
         if isinstance(value, dict):
             raise TypeError('Parse for dict arguments not yet implemented.')
 
-        separator = " " if len(key.lstrip("-")) == 1 else "="
-
         if isinstance(value, list):
             temp_args = ",".join(map(str, value))
-            res.append("{}{}".format(key + separator, temp_args))
+            res.append("{} {}".format(key, temp_args))
         else:
             if value is None:
                 arg_text = "{}"
             elif isinstance(value, str):
-                arg_text = '{}"{}"'
+                arg_text = '{} "{}"'
             else:
-                arg_text = '{}{}'
-            res.append(arg_text.format(key + separator, value))
+                arg_text = '{} {}'
+            res.append(arg_text.format(key, value))
     return res
 
 

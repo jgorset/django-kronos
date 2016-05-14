@@ -16,7 +16,7 @@ from kronos.settings import KRONOS_BREADCRUMB
 from kronos import registry, load
 
 
-crontab = CronTab('')
+crontab = CronTab(user=True)
 
 def get_crontab(*args, **kwargs):
     return crontab

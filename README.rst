@@ -1,8 +1,13 @@
 .. image::  https://raw.githubusercontent.com/jgorset/django-kronos/master/docs/banner.png
 
-.. image:: https://api.travis-ci.org/jgorset/django-kronos.svg?branch=master
+.. image:: https://coveralls.io/repos/github/joshblum/django-kronos/badge.svg?branch=master
+    :target: https://coveralls.io/github/joshblum/django-kronos?branch=master
+.. image:: https://travis-ci.org/jgorset/django-kronos.svg?branch=master
+    :target: https://travis-ci.org/jgorset/django-kronos
 .. image:: https://img.shields.io/github/license/jgorset/django-kronos.svg
+    :target: https://raw.githubusercontent.com/jgorset/django-kronos/master/LICENSE
 .. image:: https://img.shields.io/pypi/v/django-kronos.svg
+    :target: https://pypi.python.org/pypi/django-kronos/
 
 Usage
 -----

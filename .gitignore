@@ -2,3 +2,4 @@ build
 *.pyc
 dist
 django_kronos.egg-info
+.coverage

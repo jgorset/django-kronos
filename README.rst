@@ -1,7 +1,7 @@
 .. image::  https://raw.githubusercontent.com/jgorset/django-kronos/master/docs/banner.png
 
-.. image:: https://coveralls.io/repos/github/joshblum/django-kronos/badge.svg?branch=master
-    :target: https://coveralls.io/github/joshblum/django-kronos?branch=master
+.. image:: https://coveralls.io/repos/github/jgorset/django-kronos/badge.svg?branch=master
+    :target: https://coveralls.io/github/jgorset/django-kronos?branch=master
 .. image:: https://travis-ci.org/jgorset/django-kronos.svg?branch=master
     :target: https://travis-ci.org/jgorset/django-kronos
 .. image:: https://img.shields.io/github/license/jgorset/django-kronos.svg

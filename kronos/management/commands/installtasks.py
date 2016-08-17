@@ -5,7 +5,7 @@ from kronos import reinstall
 class Command(BaseCommand):
     help = 'Register tasks with cron'
 
-    def handle(self, **options):
+    def handle(self, *args, **options):
         removed, installed = reinstall()
         if not removed:
             print("{} tasks installed.".format(installed))

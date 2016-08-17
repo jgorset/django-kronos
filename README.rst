@@ -35,13 +35,13 @@ Kronos works with Django management commands, too::
 
     # app/management/commands/task.py
 
-    from django.core.management.base import NoArgsCommand
+    from django.core.management.base import BaseCommand
 
     import kronos
 
     @kronos.register('0 0 * * *')
-    class Command(NoArgsCommand):
-        def handle_noargs(self, **options):
+    class Command(BaseCommand):
+        def handle(self, **options):
             print('Hello, world!')
 
 If your management command accepts arguments, just pass them in the decorator::

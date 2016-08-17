@@ -1,11 +1,11 @@
-from django.core.management.base import NoArgsCommand
+from django.core.management.base import BaseCommand
 from kronos import reinstall
 
 
-class Command(NoArgsCommand):
+class Command(BaseCommand):
     help = 'Register tasks with cron'
 
-    def handle_noargs(self, **options):
+    def handle(self, **options):
         removed, installed = reinstall()
         if not removed:
             print("{} tasks installed.".format(installed))

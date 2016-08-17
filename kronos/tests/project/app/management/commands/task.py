@@ -7,5 +7,5 @@ import kronos
 class Command(BaseCommand):
     help = 'Register tasks with cron'
 
-    def handle(self, **options):
+    def handle(self, *args, **options):
         print('command task')

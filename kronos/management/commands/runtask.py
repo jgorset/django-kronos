@@ -7,8 +7,13 @@ class Command(BaseCommand):
     args = '<task>'
     help = 'Run the given task'
 
-    def handle(self, task_name, **options):
+    def add_arguments(self, parser):
+        parser.add_argument('task', nargs='?', type=str)
+
+    def handle(self, **options):
         kronos.load()
+
+        task_name = options.get('task')
 
         for task in kronos.registry:
             if task.name == task_name:

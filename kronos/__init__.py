@@ -104,7 +104,7 @@ def register(schedule, args=None, settings_filter=None):
         if KRONOS_PYTHONPATH is not None:
             command += ' --pythonpath=%s' % KRONOS_PYTHONPATH
 
-        if getattr(conf.settings, settings_filter, True):
+        if getattr(django.conf.settings, settings_filter, True):
             registry.add(Task(name, schedule, command, func))
 
         @wraps(function)

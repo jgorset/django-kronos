@@ -1,4 +1,4 @@
 mock
-django==1.7
+django==1.11.23
 six==1.9.0
 python-crontab>=1.9

@@ -76,7 +76,7 @@ def process_args(args):
     return res
 
 
-def register(schedule, args=None):
+def register(schedule, args=None, settings_filter=None):
     def decorator(function):
         global registry_kronos, registry_django
 
@@ -104,7 +104,8 @@ def register(schedule, args=None):
         if KRONOS_PYTHONPATH is not None:
             command += ' --pythonpath=%s' % KRONOS_PYTHONPATH
 
-        registry.add(Task(name, schedule, command, func))
+        if settings_filter is None or getattr(django.conf.settings, settings_filter, False):
+            registry.add(Task(name, schedule, command, func))
 
         @wraps(function)
         def wrapper(*args, **kwargs):

@@ -41,7 +41,7 @@ def load():
     for cmd, app in get_commands().items():
         try:
             load_command_class(app, cmd)
-        except django.core.exceptions.ImproperlyConfigured:
+        except (django.core.exceptions.ImproperlyConfigured, ModuleNotFoundError):
             pass
 
 

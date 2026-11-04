@@ -2,6 +2,7 @@ from functools import wraps
 import collections
 import crontab
 import django
+import logging
 from django.core.management import get_commands, load_command_class
 
 try:
@@ -21,10 +22,15 @@ Task = collections.namedtuple('Task', ['name', 'schedule', 'command', 'function'
 
 registry = set()
 
+logger = logging.getLogger(__name__)
 
-def load():
+
+def load(warn_on_skip=False):
     """
     Load ``cron`` modules for applications listed in ``INSTALLED_APPS``.
+
+    :param warn_on_skip: Log a warning for each management command that
+                         is skipped because it can't be imported.
     """
     autodiscover_modules('cron')
 
@@ -43,6 +49,11 @@ def load():
             load_command_class(app, cmd)
         except django.core.exceptions.ImproperlyConfigured:
             pass
+        except ImportError as e:
+            if warn_on_skip:
+                logger.warning(
+                    'Skipped management command "%s", so any task it '
+                    'registers was not installed: %s', cmd, e)
 
 
 KRONOS_TEMPLATE = \
@@ -119,7 +130,7 @@ def install():
     """
     Register tasks with cron.
     """
-    load()
+    load(warn_on_skip=True)
     tab = crontab.CronTab(user=True)
     for task in registry:
         tab.new(task.command, KRONOS_BREADCRUMB).setall(task.schedule)

@@ -93,3 +93,14 @@ class TestCase(TestCase):
 
         call_command('uninstalltasks')
         self.assertTrue(len(list(crontab.commands)), 1)
+
+    @mock.patch('kronos.logger')
+    @mock.patch('kronos.load_command_class',
+                side_effect=ImportError('No module named freezegun'))
+    def test_load_skips_commands_with_missing_modules(self, _, logger):
+        """Test commands that can't be imported are skipped"""
+        load()
+        self.assertFalse(logger.warning.called)
+
+        load(warn_on_skip=True)
+        self.assertTrue(logger.warning.called)
